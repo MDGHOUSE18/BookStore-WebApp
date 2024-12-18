@@ -1,0 +1,50 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono auto-generated files
+mono_crash.*
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2019/2022 cache/options directory
+.vs/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# StyleCop
+StyleCopReport.xml
+
+# Local history for Visual Studio
+.vscode/.history/
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Rider
+.idea/
+*.sln.iml
+
+# ASP.NET Core Secret Manager secrets.json file
+secrets.json
+
+# DotNet user-specific files
+*.dotnet_user_profile
+
+# NPM packages
+node_modules/
