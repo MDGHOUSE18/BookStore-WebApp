@@ -1,9 +1,11 @@
 ﻿using Common.DAO;
 using Common.DTO;
+using Common.Modals;
 using DataAccessLayer.DataAccess;
 using DataAccessLayer.Helpers;
 using DataAccessLayer.Interfaces;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,33 +17,53 @@ namespace DataAccessLayer.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly string _connectionString;
         private readonly TokenHelper _tokenHelper;
 
-        public UserRepository(SqlHelper sqlHelper, TokenHelper tokenHelper)
+
+        public UserRepository(IConfiguration configuration,TokenHelper tokenHelper)
         {
-            _sqlHelper = sqlHelper;
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
             _tokenHelper = tokenHelper;
         }
 
-        // Add a new user using stored procedure
+        public async Task<bool> IsRegisteredAsync(string email)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("CheckUserByEmail", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Email", email);
+
+                con.Open();
+                int result = Convert.ToInt32(cmd.ExecuteScalar());
+                return result > 0;
+            }
+        }
+
         public bool CreateUser(RegisterDTO user)
         {
-
             user.PasswordHash = EncodePasswordToBase64(user.PasswordHash);
-            Console.WriteLine(user.FullName);
-            var query = "CreateUser";
-            var parameters = new SqlParameter[]
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                new SqlParameter("@FullName", user.FullName),
-                new SqlParameter("@Email", user.Email),
-                new SqlParameter("@PasswordHash", user.PasswordHash),
-                new SqlParameter("@Role", "user"),
-                new SqlParameter("@PhoneNumber", user.Phone)
-            };
-            
-            int rowsAffected = _sqlHelper.ExecuteNonQueryAsync(query, parameters).Result;
-            return rowsAffected > 0;
+                SqlCommand cmd = new SqlCommand("CreateUser", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddRange(
+                    new SqlParameter[]
+                        {
+                            new SqlParameter("@FullName", user.FullName),
+                            new SqlParameter("@Email", user.Email),
+                            new SqlParameter("@PasswordHash", user.PasswordHash),
+                            new SqlParameter("@Role", "user"),
+                            new SqlParameter("@PhoneNumber", user.Phone)
+                        }
+                    );
+
+                con.Open();
+                int rowsEffected = cmd.ExecuteNonQuery();
+
+                return rowsEffected>0;
+            }
         }
 
         private static string EncodePasswordToBase64(string password)
@@ -59,67 +81,94 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public async Task<string> Login(LoginDTO user)
+        public Task<string> Login(LoginDTO user)
         {
             user.Password = EncodePasswordToBase64(user.Password);
-            var query = "Login";
-            var parameters = new SqlParameter[]
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                new SqlParameter("@Email", user.Email),
-                new SqlParameter("@Password", user.Password)
-            };
+                SqlCommand cmd = new SqlCommand("Login", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddRange(
+                    new SqlParameter[]
+                        {
+                            new SqlParameter("@Email", user.Email),
+                            new SqlParameter("@Password", user.Password)
+                        }
+                    );
 
-            var dataTable = await _sqlHelper.ExecuteStoredProcedureAsync(query, parameters);
+                con.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    int Id = Convert.ToInt32(reader["UserId"]);
+                    var token = _tokenHelper.GenerateJwtToken(Id, user.Email);
+                    return Task.FromResult(token);
+                }
 
-            if (dataTable.Rows.Count == 0) return null;
+                return Task.FromResult<string>(null);
+            }
 
-            var row = dataTable.Rows[0];
-            int Id = Convert.ToInt32(row["UserId"]);
-
-            return _tokenHelper.GenerateJwtToken(Id, user.Email);
-            //return new UserDTO
-            //{
-            //    //Id = Convert.ToInt32(row["UserId"]),
-            //    FullName = row["FullName"].ToString(),
-            //    Email = row["Email"].ToString(),
-            //    Role = row["Role"].ToString(),
-            //    Address = row["Address"].ToString(),
-            //    PhoneNumber = row["PhoneNumber"].ToString(),
-            //    CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
-            //    //UpdatedAt = row["UpdatedAt"] == DBNull.Value ? null : Convert.ToDateTime(row["UpdatedAt"]),
-            //    //LastLogin = row["LastLogin"] == DBNull.Value ? null : Convert.ToDateTime(row["LastLogin"]),
-            //    //IsActive = Convert.ToBoolean(row["IsActive"])
-            //};
         }
 
-        public async Task<UserDTO> GetUserByIdAsync(int userId)
+        public ForgetPasswordDTO ForgetPassword(string email)
         {
-            var query = "GetUserById"; // Stored Procedure Name
-            var parameters = new SqlParameter[]
-            {
-                new SqlParameter("@Id", userId)
-            };
-
-            var dataTable = await _sqlHelper.ExecuteStoredProcedureAsync(query, parameters);
-
-            if (dataTable.Rows.Count == 0) return null;
-
-            var row = dataTable.Rows[0];
-            return new UserDTO
-            {
-                //Id = Convert.ToInt32(row["Id"]),
-                FullName = row["FullName"].ToString(),
-                Email = row["Email"].ToString(),
-                Role = row["Role"].ToString(),
-                Address = row["Address"].ToString(),
-                PhoneNumber = row["PhoneNumber"].ToString(),
-                CreatedAt = Convert.ToDateTime(row["CreatedAt"]),
-                //UpdatedAt = row["UpdatedAt"] == DBNull.Value ? null : Convert.ToDateTime(row["UpdatedAt"]),
-                //LastLogin = row["LastLogin"] == DBNull.Value ? null : Convert.ToDateTime(row["LastLogin"]),
-                //IsActive = Convert.ToBoolean(row["IsActive"])
-            };
+            ForgetPasswordDTO forgetPassword = new ForgetPasswordDTO();
+            forgetPassword.Email = email;
+            forgetPassword.Token = _tokenHelper.GenerateResetPasswordToken(email); 
+            return forgetPassword;
         }
 
+        public Task<UserDTO> GetUserByIdAsync(int userId)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("GetUserById", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Id", userId);
+
+                con.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    return Task.FromResult(new UserDTO
+                    {
+                        FullName = reader["FullName"].ToString(),
+                        Email = reader["Email"].ToString(),
+                        Role = reader["Role"].ToString(),
+                        Address = reader["Address"].ToString(),
+                        PhoneNumber = reader["PhoneNumber"].ToString(),
+                        CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+                    });
+                }
+
+                return Task.FromResult<UserDTO>(null);
+            }
+        }
+
+        public Task<bool> ResetPassword(string email, ResetPasswordDTO resetPassword)
+        {
+            string PasswordHash = EncodePasswordToBase64(resetPassword.Password);
+
+
+            using(SqlConnection con = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("ap_ResetPassword", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddRange(
+                    new SqlParameter[]
+                        {
+                        new SqlParameter("@Email", email),
+                        new SqlParameter("@Password", PasswordHash)
+                        }
+                    );
+
+                con.Open();
+                int row = cmd.ExecuteNonQuery();
+                return Task.FromResult(row > 0);
+            }
+            
+        }
 
     }
 }

@@ -8,5 +8,9 @@ namespace BusinessLayer.Interfaces
         bool CreateUser(RegisterDTO user);
         Task<string> Login(LoginDTO user);
         Task<UserDTO> GetUserByIdAsync(int userId);
+        Task<bool> IsRegisteredAsync(string email);
+        ForgetPasswordDTO ForgetPassword(string email);
+
+        Task<bool> ResetPassword(string email, ResetPasswordDTO resetPassword);
     }
 }

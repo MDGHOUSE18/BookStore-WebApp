@@ -31,5 +31,20 @@ namespace BusinessLayer.Services
         {
             return await _userRepo.GetUserByIdAsync(userId);
         }
+        public async Task<bool> IsRegisteredAsync(string email)
+        {
+            return await _userRepo.IsRegisteredAsync(email);
+        }
+        public async Task<bool> ResetPassword(string email, ResetPasswordDTO resetPassword)
+        {
+            return await _userRepo.ResetPassword(email, resetPassword);
+        }
+
+        public ForgetPasswordDTO ForgetPassword(string email)
+        {
+            return _userRepo.ForgetPassword(email);
+        }
+
+       
     }
 }

@@ -24,6 +24,7 @@ namespace DataAccessLayer.DataAccess
         public async Task<DataTable> ExecuteStoredProcedureAsync(string storedProcedure, SqlParameter[] parameters)
         {
             Console.WriteLine(parameters);
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();

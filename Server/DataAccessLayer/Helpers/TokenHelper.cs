@@ -29,7 +29,8 @@ namespace DataAccessLayer.Helpers
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, email),
-                new Claim("UserId", userId.ToString())
+                new Claim("UserId", userId.ToString()),
+                new Claim(ClaimTypes.Role, "Admin")
             };
 
             var token = new JwtSecurityToken(
@@ -44,15 +45,16 @@ namespace DataAccessLayer.Helpers
         }
 
         //Generate Reset Password Token
-        public string GenerateResetPasswordToken(int userId, string email)
+        public string GenerateResetPasswordToken(string email)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:ResetPasswordKey"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, email),
-                new Claim("UserId", userId.ToString())
+                new Claim(ClaimTypes.Email, email)
+                //new Claim("Email", email),
+                //new Claim("UserId", userId.ToString())
             };
 
             var token = new JwtSecurityToken(
