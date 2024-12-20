@@ -9,99 +9,77 @@ CREATE TABLE Cart (
     CONSTRAINT FK_Cart_Book FOREIGN KEY (BookId) REFERENCES Books(BookId)
 );
 
---1. Add Item to Cart
---This procedure adds an item to the cart. If the item already exists, it increments the quantity; otherwise, it inserts a new row.
-CREATE OR ALTER PROCEDURE sp_AddItemToCart
+CREATE OR ALTER PROCEDURE usp_AddCartItem
     @UserId INT,
     @BookId INT,
     @Quantity INT
 AS
 BEGIN
-    SET NOCOUNT ON;
-
     IF EXISTS (SELECT 1 FROM Cart WHERE UserId = @UserId AND BookId = @BookId)
     BEGIN
+        -- If the item already exists in the cart, update the quantity
         UPDATE Cart
         SET Quantity = Quantity + @Quantity
         WHERE UserId = @UserId AND BookId = @BookId;
     END
     ELSE
     BEGIN
+        -- If the item does not exist, insert a new row
         INSERT INTO Cart (UserId, BookId, Quantity)
         VALUES (@UserId, @BookId, @Quantity);
     END
 END;
 
---2. Update Item Quantity in Cart
---This procedure updates the quantity of a specific item in the cart. If the new quantity is zero or less, it removes the item from the cart.
-CREATE OR ALTER PROCEDURE sp_UpdateCartItemQuantity
-    @UserId INT,
-    @BookId INT,
-    @Quantity INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF @Quantity <= 0
-    BEGIN
-        DELETE FROM Cart
-        WHERE UserId = @UserId AND BookId = @BookId;
-    END
-    ELSE
-    BEGIN
-        UPDATE Cart
-        SET Quantity = @Quantity
-        WHERE UserId = @UserId AND BookId = @BookId;
-    END
-END;
-
---3. Remove Item from Cart
---This procedure removes a specific item from the cart.
-CREATE OR ALTER PROCEDURE sp_RemoveItemFromCart
-    @UserId INT,
-    @BookId INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    DELETE FROM Cart
-    WHERE UserId = @UserId AND BookId = @BookId;
-END;
-
---4. Retrieve Cart Contents
---This procedure retrieves all items in the cart for a specific user, including details from the Books table.
-
-CREATE OR ALTER PROCEDURE sp_GetCartContents
+CREATE OR ALTER PROCEDURE usp_GetCartItems
     @UserId INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT
+    SELECT 
         c.BookId,
         b.Title,
         b.Author,
         b.Price,
-        c.Quantity,
-        (b.Price * c.Quantity) AS TotalPrice,
-		(ISNULL(b.DiscountedPrice, b.Price) * c.Quantity) AS TotalPriceWithDiscount
-    FROM
+        CASE 
+            WHEN b.DiscountedPrice > 0 THEN b.Price - (b.Price * b.DiscountedPrice / 100) 
+            ELSE b.Price 
+        END AS DiscountedPrice,
+        b.ImageUrl,
+        b.StockQuantity,
+        c.Quantity AS CartQuantity,
+        c.Quantity * CASE 
+            WHEN b.DiscountedPrice > 0 THEN b.Price - (b.Price * b.DiscountedPrice / 100) 
+            ELSE b.Price 
+        END AS TotalPrice
+    FROM 
         Cart c
-    INNER JOIN
+    INNER JOIN 
         Books b ON c.BookId = b.BookId
-    WHERE
+    WHERE 
         c.UserId = @UserId;
 END;
 
-
---5. Clear Cart
---This procedure removes all items from a user's cart.
-CREATE OR ALTER PROCEDURE ClearCart
-    @UserId INT
+EXEC usp_GetCartItems @UserId = 1;
+Select * from Cart
+CREATE OR ALTER PROCEDURE usp_DeleteCart
+    @CartID INT
 AS
 BEGIN
-    SET NOCOUNT ON;
-
     DELETE FROM Cart
-    WHERE UserId = @UserId;
+    WHERE CartId = @CartID;
+
+    --IF @@ROWCOUNT > 0
+    --    RETURN 1;
+    --ELSE
+    --    RETURN 0;
+END;
+
+
+CREATE OR ALTER PROCEDURE usp_RemoveAllFromCart
+    @UserID INT
+AS
+BEGIN
+    DELETE FROM Cart
+    WHERE UserID = @UserID;
 END;

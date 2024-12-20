@@ -42,6 +42,8 @@ try
     builder.Services.AddTransient<TokenHelper>();
     builder.Services.AddTransient<IBooksRepo, BooksRepo>();
     builder.Services.AddTransient<IBooksBL, BooksBL>();
+    builder.Services.AddTransient<ICartRepo,CartRepo>();
+    builder.Services.AddTransient<ICartBL, CartBL>();
 
     // JWT Authentication configuration
     builder.Services.AddAuthentication(options =>

@@ -17,7 +17,7 @@ CREATE TABLE Users (
 );
 
 Select * from Users;
-CREATE OR ALTER PROCEDURE sp_CreateUser
+CREATE OR ALTER PROCEDURE usp_CreateUser
     @FullName NVARCHAR(255),
     @Email NVARCHAR(255),
     @PasswordHash NVARCHAR(255),
@@ -29,7 +29,7 @@ BEGIN
     VALUES (@FullName, @Email, @PasswordHash, @Role, @PhoneNumber, GETDATE());
 END
 
-CREATE OR ALTER PROCEDURE sp_Login
+CREATE OR ALTER PROCEDURE usp_Login
     @Email NVARCHAR(100),
     @Password NVARCHAR(255)
 AS
@@ -62,7 +62,7 @@ BEGIN
     END
 END;
 
-CREATE OR ALTER PROCEDURE sp_GetUserById
+CREATE OR ALTER PROCEDURE usp_GetUserById
     @Id INT
 AS
 BEGIN
@@ -75,7 +75,7 @@ END;
 
 
 
-CREATE OR ALTER PROCEDURE sp_CheckUserByEmail
+CREATE OR ALTER PROCEDURE usp_CheckUserByEmail
     @Email NVARCHAR(255) -- Input parameter for the email
 AS
 BEGIN
@@ -96,7 +96,7 @@ EXEC CheckUserByEmail @Email = 'user@example.com';
 
 
 
-CREATE OR ALTER PROCEDURE sp_ResetPassword
+CREATE OR ALTER PROCEDURE usp_ResetPassword
     @Email NVARCHAR(255),
     @Password NVARCHAR(255)
 AS
