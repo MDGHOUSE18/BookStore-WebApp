@@ -37,7 +37,7 @@ namespace DataAccessLayer.Helpers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddHours(5),
                 signingCredentials: credentials
             );
 

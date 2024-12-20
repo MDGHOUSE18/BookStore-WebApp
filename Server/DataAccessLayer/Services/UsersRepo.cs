@@ -1,7 +1,6 @@
 ﻿using Common.DAO;
 using Common.DTO;
 using Common.Modals;
-using DataAccessLayer.DataAccess;
 using DataAccessLayer.Helpers;
 using DataAccessLayer.Interfaces;
 using Microsoft.Data.SqlClient;
@@ -15,29 +14,29 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UsersRepo : IUsersRepo
     {
         private readonly string _connectionString;
         private readonly TokenHelper _tokenHelper;
 
 
-        public UserRepository(IConfiguration configuration,TokenHelper tokenHelper)
+        public UsersRepo(IConfiguration configuration,TokenHelper tokenHelper)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
             _tokenHelper = tokenHelper;
         }
 
-        public async Task<bool> IsRegisteredAsync(string email)
+        public Task<bool> IsRegisteredAsync(string email)
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("CheckUserByEmail", con);
+                SqlCommand cmd = new SqlCommand("usp_CheckUserByEmail", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@Email", email);
 
                 con.Open();
                 int result = Convert.ToInt32(cmd.ExecuteScalar());
-                return result > 0;
+                return Task.FromResult(result > 0);
             }
         }
 
@@ -46,7 +45,7 @@ namespace DataAccessLayer.Repositories
             user.PasswordHash = EncodePasswordToBase64(user.PasswordHash);
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("CreateUser", con);
+                SqlCommand cmd = new SqlCommand("usp_CreateUser", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddRange(
                     new SqlParameter[]
@@ -54,7 +53,7 @@ namespace DataAccessLayer.Repositories
                             new SqlParameter("@FullName", user.FullName),
                             new SqlParameter("@Email", user.Email),
                             new SqlParameter("@PasswordHash", user.PasswordHash),
-                            new SqlParameter("@Role", "user"),
+                            new SqlParameter("@Role", "User"),
                             new SqlParameter("@PhoneNumber", user.Phone)
                         }
                     );
@@ -87,7 +86,7 @@ namespace DataAccessLayer.Repositories
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("Login", con);
+                SqlCommand cmd = new SqlCommand("usp_Login", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddRange(
                     new SqlParameter[]
@@ -123,7 +122,7 @@ namespace DataAccessLayer.Repositories
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("GetUserById", con);
+                SqlCommand cmd = new SqlCommand("usp_GetUserById", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@Id", userId);
 
@@ -136,7 +135,6 @@ namespace DataAccessLayer.Repositories
                         FullName = reader["FullName"].ToString(),
                         Email = reader["Email"].ToString(),
                         Role = reader["Role"].ToString(),
-                        Address = reader["Address"].ToString(),
                         PhoneNumber = reader["PhoneNumber"].ToString(),
                         CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
                     });
@@ -153,7 +151,7 @@ namespace DataAccessLayer.Repositories
 
             using(SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("ap_ResetPassword", con);
+                SqlCommand cmd = new SqlCommand("usp_ResetPassword", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddRange(
                     new SqlParameter[]

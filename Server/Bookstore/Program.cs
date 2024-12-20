@@ -1,9 +1,9 @@
 using BusinessLayer.Interfaces;
 using BusinessLayer.Services;
-using DataAccessLayer.DataAccess;
 using DataAccessLayer.Helpers;
 using DataAccessLayer.Interfaces;
 using DataAccessLayer.Repositories;
+using DataAccessLayer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -30,20 +30,18 @@ try
     // Add configuration to the DI container
     builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-    // Register DatabaseContext to DI container
-    builder.Services.AddScoped<DatabaseContext>();
 
     // Setup NLog for Dependency Injection
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
 
-    // Register SqlHelper for Dependency Injection
-    builder.Services.AddScoped<SqlHelper>();
 
     // Dependency Injection for Managers and Repositories
-    builder.Services.AddTransient<IUserRepository, UserRepository>();
-    builder.Services.AddTransient<IUserBL, UserBL>();
+    builder.Services.AddTransient<IUsersRepo, UsersRepo>();
+    builder.Services.AddTransient<IUsersBL, UsersBL>();
     builder.Services.AddTransient<TokenHelper>();
+    builder.Services.AddTransient<IBooksRepo, BooksRepo>();
+    builder.Services.AddTransient<IBooksBL, BooksBL>();
 
     // JWT Authentication configuration
     builder.Services.AddAuthentication(options =>

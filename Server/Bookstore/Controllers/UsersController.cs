@@ -18,12 +18,12 @@ namespace Bookstore.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserBL _userBL;
+        private IUsersBL _userBL;
         private IBus bus;
         private readonly ILogger<UsersController> _logger;
         private readonly TokenHelper _tokenHelper;
 
-        public UsersController(IUserBL userBL,ILogger<UsersController> logger, IBus bus,TokenHelper tokenHelper)
+        public UsersController(IUsersBL userBL,ILogger<UsersController> logger, IBus bus,TokenHelper tokenHelper)
         {
             this._userBL = userBL;
             this.bus = bus;

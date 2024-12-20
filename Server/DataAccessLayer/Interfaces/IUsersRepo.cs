@@ -1,16 +1,15 @@
 ﻿using Common.DAO;
 using Common.DTO;
 
-namespace BusinessLayer.Interfaces
+namespace DataAccessLayer.Interfaces
 {
-    public interface IUserBL
+    public interface IUsersRepo
     {
         bool CreateUser(RegisterDTO user);
-        Task<string> Login(LoginDTO user);
         Task<UserDTO> GetUserByIdAsync(int userId);
         Task<bool> IsRegisteredAsync(string email);
+        Task<string> Login(LoginDTO user);
         ForgetPasswordDTO ForgetPassword(string email);
-
         Task<bool> ResetPassword(string email, ResetPasswordDTO resetPassword);
     }
 }

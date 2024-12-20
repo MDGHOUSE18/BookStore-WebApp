@@ -9,7 +9,6 @@ CREATE TABLE Users (
     Email NVARCHAR(255) NOT NULL UNIQUE, -- Email with unique constraint
     PasswordHash NVARCHAR(255) NOT NULL, -- Password hash
     Role NVARCHAR(50) NOT NULL, -- Role of the user
-    Address NVARCHAR(500), -- Optional address
     PhoneNumber NVARCHAR(20), -- Optional phone number
     CreatedAt DATETIME NOT NULL DEFAULT GETDATE(), -- Default to current date and time
     UpdatedAt DATETIME NULL, -- Nullable updated timestamp
@@ -55,8 +54,7 @@ BEGIN
 			UserId,
             FullName, 
             Email, 
-            Role, 
-            Address, 
+            Role,  
             PhoneNumber, 
             CreatedAt
         FROM Users
@@ -70,7 +68,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT UserId, FullName, Email, Role, Address, PhoneNumber, CreatedAt, UpdatedAt, LastLogin
+    SELECT UserId, FullName, Email, Role, PhoneNumber, CreatedAt, UpdatedAt, LastLogin
     FROM Users
     WHERE UserId = @Id;
 END;

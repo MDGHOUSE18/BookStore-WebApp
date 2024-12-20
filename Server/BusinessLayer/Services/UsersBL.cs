@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace BusinessLayer.Services
 {
-    public class UserBL : IUserBL
+    public class UsersBL : IUsersBL
     {
-        private IUserRepository _userRepo;
+        private IUsersRepo _userRepo;
 
-        public UserBL(IUserRepository userRepo)
+        public UsersBL(IUsersRepo userRepo)
         {
             this._userRepo = userRepo;
         }
