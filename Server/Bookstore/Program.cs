@@ -44,6 +44,8 @@ try
     builder.Services.AddTransient<IBooksBL, BooksBL>();
     builder.Services.AddTransient<ICartRepo,CartRepo>();
     builder.Services.AddTransient<ICartBL, CartBL>();
+    builder.Services.AddTransient<IWishListRepo, WishListRepo>();
+    builder.Services.AddTransient<IWishListBL, WishListBL>();
 
     // JWT Authentication configuration
     builder.Services.AddAuthentication(options =>
