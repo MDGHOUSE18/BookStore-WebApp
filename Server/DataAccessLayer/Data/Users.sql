@@ -2,6 +2,8 @@ CREATE DATABASE Bookstore;
 
 use Bookstore;
 
+SELECT * FROM Users
+
 DROP TABLE Users;
 CREATE TABLE Users (
     UserId INT PRIMARY KEY IDENTITY(1,1), -- Auto-incrementing primary key
