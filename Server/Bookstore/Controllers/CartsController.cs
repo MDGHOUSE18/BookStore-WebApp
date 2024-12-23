@@ -23,28 +23,23 @@ namespace Bookstore.Controllers
         }
 
         // Add an item to the cart
-        [HttpPost("{bookId}")]
-        public async Task<IActionResult> AddCartItem([FromBody] int quantity, int bookId)
+        [HttpPost]
+        public async Task<IActionResult> AddCartItem([FromBody] AddCartDTO cart)
         {
-            AddCartDTO cart = new AddCartDTO
-            {
-                Quantity = quantity,
-                BookId = bookId
-            };
             int userId = int.Parse(User.FindFirst("UserId").Value);
             _logger.LogInformation($"Attempting to add an item to the cart for UserId {userId}");
 
             var result = await _cartBL.AddCartItemAsync(cart,userId);
-            if (result)
+            if (result!=null)
             {
-                return Ok(new ResponseModel<bool>
+                return Ok(new ResponseModel<CartItemDTO>
                 {
                     Success = true,
                     Message = "Item added to cart successfully.",
                     Data = result
                 });
             }
-            return BadRequest(new ResponseModel<bool>
+            return BadRequest(new ResponseModel<CartItemDTO>
             {
                 Success = false,
                 Message = "Failed to add item to the cart.",
