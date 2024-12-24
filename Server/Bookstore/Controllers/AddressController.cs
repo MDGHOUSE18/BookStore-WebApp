@@ -21,11 +21,13 @@ namespace Bookstore.Controllers
             _logger = logger;
         }
 
-        [HttpPost("AddAddress")]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<AddressDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<string>))]
         public async Task<IActionResult> AddAddress(AddAddressDTO address)
         {
             _logger.LogInformation("Starting AddAddress operation.");
-
             var userId = int.Parse(User.FindFirst("UserId").Value);
             try
             {
@@ -47,10 +49,12 @@ namespace Bookstore.Controllers
         }
 
         [HttpGet("{addressId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<AddressDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<string>))]
         public async Task<IActionResult> GetAddressById(int addressId)
         {
             _logger.LogInformation($"Fetching address with ID: {addressId}");
-
             try
             {
                 var address = await _addressBL.GetAddressByIdAsync(addressId);
@@ -71,6 +75,9 @@ namespace Bookstore.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<AddressDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<string>))]
         public async Task<IActionResult> UpdateAddress(UpdateAddressDTO address)
         {
             _logger.LogInformation("Starting UpdateAddress operation.");
@@ -95,6 +102,9 @@ namespace Bookstore.Controllers
         }
 
         [HttpDelete("{addressId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<AddressDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<string>))]
         public async Task<IActionResult> DeleteAddress(int addressId)
         {
             _logger.LogInformation($"Starting DeleteAddress operation for ID: {addressId}");
@@ -119,11 +129,13 @@ namespace Bookstore.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<List<AddressDTO>>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<string>))]
         public async Task<IActionResult> GetAddressesByUserId()
         {
             var userId = int.Parse(User.FindFirst("UserId").Value);
             _logger.LogInformation($"Fetching addresses for user ID: {userId}");
-
             try
             {
                 var addresses = await _addressBL.GetAddressesByUserIdAsync(userId);
@@ -143,4 +155,5 @@ namespace Bookstore.Controllers
             }
         }
     }
+
 }

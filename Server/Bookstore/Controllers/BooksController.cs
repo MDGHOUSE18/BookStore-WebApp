@@ -11,7 +11,7 @@ namespace Bookstore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles="Admin")]
+    [Authorize(Roles = "Admin")]
     public class BooksController : ControllerBase
     {
         private readonly IBooksBL _booksBL;
@@ -24,10 +24,12 @@ namespace Bookstore.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<BookDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<BookDTO>))]
         public async Task<IActionResult> AddBook([FromBody] AddBookDTO bookDTO)
         {
-            _logger.LogInformation("Starting AddBook operation.");
-            //int adminId = int.Parse(User.FindFirst("UserId")?.Value);
+            _logger.LogInformation("Starting AddBook operation for book: {Title}", bookDTO.Title);
+
             try
             {
                 var result = await _booksBL.AddBookAsync(bookDTO);
@@ -37,39 +39,67 @@ namespace Bookstore.Controllers
                     Message = $"Book added successfully with name {bookDTO.Title}",
                     Data = result
                 };
-                _logger.LogInformation("Book added successfully.");
+                _logger.LogInformation("Book added successfully: {Title}", bookDTO.Title);
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while adding book");
-                return BadRequest(new ResponseModel<BookDTO> { Success = false, Message = "An error occurred while adding the book." });
+                _logger.LogError(ex, "Error occurred while adding book: {Title}", bookDTO.Title);
+                return BadRequest(new ResponseModel<BookDTO>
+                {
+                    Success = false,
+                    Message = "An error occurred while adding the book."
+                });
             }
         }
 
         [HttpDelete("{bookId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<bool>))]
         public async Task<IActionResult> DeleteBook(int bookId)
         {
+            _logger.LogInformation("Attempting to delete book with ID: {BookId}", bookId);
+
             try
             {
                 var result = await _booksBL.DeleteBookAsync(bookId);
                 if (result)
                 {
-                    return Ok(new ResponseModel<bool> { Success = true,Message=$"Book deleted successfully with this BookId {bookId}" });
+                    _logger.LogInformation("Book deleted successfully: {BookId}", bookId);
+                    return Ok(new ResponseModel<bool>
+                    {
+                        Success = true,
+                        Message = $"Book deleted successfully with ID {bookId}",
+                        Data = true
+                    });
                 }
-                return NotFound(new ResponseModel<bool> { Success = false, Message = "Book not found" });
+                _logger.LogWarning("Book not found with ID: {BookId}", bookId);
+                return NotFound(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "Book not found"
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while deleting book");
-                return BadRequest(new ResponseModel<bool> { Success = false, Message = "An error occurred while deleting the book." });
+                _logger.LogError(ex, "Error occurred while deleting book: {BookId}", bookId);
+                return BadRequest(new ResponseModel<bool>
+                {
+                    Success = false,
+                    Message = "An error occurred while deleting the book."
+                });
             }
         }
 
         [AllowAnonymous]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<List<BookDTO>>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<List<BookDTO>>))]
         public async Task<IActionResult> GetAllBooks()
         {
+            _logger.LogInformation("Fetching all books.");
+
             try
             {
                 var books = await _booksBL.GetAllBooksAsync();
@@ -84,14 +114,23 @@ namespace Bookstore.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while retrieving books");
-                return BadRequest(new ResponseModel<List<BookDTO>> { Success = false, Message = "An error occurred while retrieving books." });
+                return BadRequest(new ResponseModel<List<BookDTO>>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving books."
+                });
             }
         }
 
         [AllowAnonymous]
         [HttpGet("{bookId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<BookDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<BookDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<BookDTO>))]
         public async Task<IActionResult> GetBookById(int bookId)
         {
+            _logger.LogInformation("Fetching book with ID: {BookId}", bookId);
+
             try
             {
                 var book = await _booksBL.GetBookByIdAsync(bookId);
@@ -105,19 +144,32 @@ namespace Bookstore.Controllers
                     };
                     return Ok(response);
                 }
-                return NotFound(new ResponseModel<BookDTO> { Success = false, Message = "Book not found" });
+                _logger.LogWarning("Book not found with ID: {BookId}", bookId);
+                return NotFound(new ResponseModel<BookDTO>
+                {
+                    Success = false,
+                    Message = "Book not found"
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while retrieving book");
-                return BadRequest(new ResponseModel<BookDTO> { Success = false, Message = "An error occurred while retrieving the book." });
+                _logger.LogError(ex, "Error occurred while retrieving book: {BookId}", bookId);
+                return BadRequest(new ResponseModel<BookDTO>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving the book."
+                });
             }
         }
 
         [HttpPut("{bookId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<BookDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<BookDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<BookDTO>))]        
         public async Task<IActionResult> UpdateBook(int bookId, [FromBody] AddBookDTO bookDTO)
         {
-            //int adminId = int.Parse(User.FindFirst("UserId")?.Value);
+            _logger.LogInformation("Attempting to update book with ID: {BookId}", bookId);
+
             try
             {
                 var result = await _booksBL.UpdateBookAsync(bookId, bookDTO);
@@ -131,13 +183,23 @@ namespace Bookstore.Controllers
                     };
                     return Ok(response);
                 }
-                return NotFound(new ResponseModel<BookDTO> { Success = false, Message = "Book not found" });
+                _logger.LogWarning("Book not found with ID: {BookId}", bookId);
+                return NotFound(new ResponseModel<BookDTO>
+                {
+                    Success = false,
+                    Message = "Book not found"
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating book");
-                return BadRequest(new ResponseModel<BookDTO> { Success = false, Message = "An error occurred while updating the book." });
+                _logger.LogError(ex, "Error occurred while updating book: {BookId}", bookId);
+                return BadRequest(new ResponseModel<BookDTO>
+                {
+                    Success = false,
+                    Message = "An error occurred while updating the book."
+                });
             }
         }
     }
+
 }

@@ -100,8 +100,9 @@ namespace DataAccessLayer.Repositories
                 SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
+                    string role = reader["Role"].ToString();
                     int Id = Convert.ToInt32(reader["UserId"]);
-                    var token = _tokenHelper.GenerateJwtToken(Id, user.Email);
+                    var token = _tokenHelper.GenerateJwtToken(Id, user.Email, role);
                     return Task.FromResult(token);
                 }
 
