@@ -24,6 +24,8 @@ namespace Bookstore.Controllers
         }
 
         [HttpPost("{bookId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<bool>))]
         public async Task<IActionResult> AddWishListItem(int bookId)
         {
             int userId = int.Parse(User.FindFirst("UserId").Value);
@@ -52,6 +54,8 @@ namespace Bookstore.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<List<WishListItemDTO>>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<List<WishListItemDTO>>))]
         public async Task<IActionResult> GetWishList()
         {
             int userId = int.Parse(User.FindFirst("UserId").Value);
@@ -80,6 +84,8 @@ namespace Bookstore.Controllers
         }
 
         [HttpDelete("{wishListId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<bool>))]
         public async Task<IActionResult> DeleteWishListItem(int wishListId)
         {
             _logger.LogInformation("Deleting wishlist item with WishListId: {WishListId}", wishListId);
@@ -107,6 +113,8 @@ namespace Bookstore.Controllers
         }
 
         [HttpDelete("RemoveAll")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<bool>))]
         public async Task<IActionResult> RemoveAllWishListItems()
         {
             int userId = int.Parse(User.FindFirst("UserId").Value);
@@ -134,4 +142,5 @@ namespace Bookstore.Controllers
             }
         }
     }
+
 }

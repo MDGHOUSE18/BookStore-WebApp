@@ -21,7 +21,7 @@ namespace DataAccessLayer.Helpers
         }
 
         //Generate Login Token
-        public string GenerateJwtToken(int userId, string email)
+        public string GenerateJwtToken(int userId, string email,string role)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -30,7 +30,7 @@ namespace DataAccessLayer.Helpers
             {
                 new Claim(ClaimTypes.Email, email),
                 new Claim("UserId", userId.ToString()),
-                new Claim(ClaimTypes.Role, "Admin")
+                new Claim(ClaimTypes.Role, role)
             };
 
             var token = new JwtSecurityToken(

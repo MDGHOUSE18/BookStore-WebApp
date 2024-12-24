@@ -24,13 +24,15 @@ namespace Bookstore.Controllers
 
         // Add an item to the cart
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<CartItemDTO>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<CartItemDTO>))]
         public async Task<IActionResult> AddCartItem([FromBody] AddCartDTO cart)
         {
             int userId = int.Parse(User.FindFirst("UserId").Value);
             _logger.LogInformation($"Attempting to add an item to the cart for UserId {userId}");
 
-            var result = await _cartBL.AddCartItemAsync(cart,userId);
-            if (result!=null)
+            var result = await _cartBL.AddCartItemAsync(cart, userId);
+            if (result != null)
             {
                 return Ok(new ResponseModel<CartItemDTO>
                 {
@@ -49,6 +51,8 @@ namespace Bookstore.Controllers
 
         // Get cart items
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<List<CartItemDTO>>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<CartItemDTO>))]
         public async Task<IActionResult> GetCartItems()
         {
             int userId = int.Parse(User.FindFirst("UserId").Value);
@@ -74,6 +78,8 @@ namespace Bookstore.Controllers
 
         // Delete a specific cart item
         [HttpDelete("{cartId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<bool>))]
         public async Task<IActionResult> DeleteCart(int cartId)
         {
             _logger.LogInformation("Attempting to delete cart item with CartId {CartId}", cartId);
@@ -98,6 +104,8 @@ namespace Bookstore.Controllers
 
         // Remove all items from the cart
         [HttpDelete("ClearCart")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<bool>))]
         public async Task<IActionResult> RemoveAllCartItems()
         {
             int userId = int.Parse(User.FindFirst("UserId").Value);
@@ -121,4 +129,5 @@ namespace Bookstore.Controllers
             });
         }
     }
+
 }

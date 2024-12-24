@@ -23,7 +23,7 @@ namespace Bookstore.Controllers
         private readonly ILogger<UsersController> _logger;
         private readonly TokenHelper _tokenHelper;
 
-        public UsersController(IUsersBL userBL,ILogger<UsersController> logger, IBus bus,TokenHelper tokenHelper)
+        public UsersController(IUsersBL userBL, ILogger<UsersController> logger, IBus bus, TokenHelper tokenHelper)
         {
             this._userBL = userBL;
             this.bus = bus;
@@ -32,10 +32,10 @@ namespace Bookstore.Controllers
             _logger.LogInformation($"UserController initialized at {DateTime.Now}");
         }
 
-        
-
         [HttpPost]
         [Route("register")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<object>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<object>))]
         public async Task<IActionResult> Register([FromBody] RegisterDTO user)
         {
             _logger.LogInformation($"Register method called with email: {user.Email}");
@@ -66,6 +66,7 @@ namespace Bookstore.Controllers
                     Data = null
                 });
             }
+
             _logger.LogError($"An error occurred while creating the user with email: {user.Email}");
             return StatusCode(500, new ResponseModel<object>
             {
@@ -77,6 +78,8 @@ namespace Bookstore.Controllers
 
         [HttpPost]
         [Route("login")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<string>))]
         public async Task<IActionResult> Login([FromBody] LoginDTO user)
         {
             _logger.LogInformation($"Login attempt for email: {user.Email}");
@@ -88,12 +91,16 @@ namespace Bookstore.Controllers
                 _logger.LogWarning($"Invalid login credentials for email: {user.Email}");
                 return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid login credentials", Data = null });
             }
+
             _logger.LogInformation($"Login successful for email: {user.Email}");
             return Ok(new ResponseModel<string> { Success = true, Message = "Login successful", Data = token });
         }
 
         [HttpPost]
         [Route("forgotPassword")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ForgetPassword(string Email)
         {
             var emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
@@ -106,6 +113,7 @@ namespace Bookstore.Controllers
                     Message = "Invalid email format. Examples of valid emails: 'example@gmail.com'"
                 });
             }
+
             _logger.LogInformation($"Forget password request received for email: {Email}");
             try
             {
@@ -113,7 +121,7 @@ namespace Bookstore.Controllers
                 if (isUserRegistered)
                 {
                     Send send = new Send();
-                    ForgetPasswordDTO forgetPasswordModel =_userBL.ForgetPassword(Email);
+                    ForgetPasswordDTO forgetPasswordModel = _userBL.ForgetPassword(Email);
                     send.SendMail(forgetPasswordModel.Email, forgetPasswordModel.Token);
                     Uri uri = new Uri("rabbitmq://localhost/FundooNotesEmailQueue");
 
@@ -144,15 +152,15 @@ namespace Bookstore.Controllers
         [Authorize(AuthenticationSchemes = "ResetPasswordScheme")]
         [HttpPost]
         [Route("resetPassword")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<string>))]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPassword)
         {
-
             _logger.LogInformation($"POST request received for password reset");
 
-            // Extract the token from the Authorization header
             var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            // Validate the token
             if (string.IsNullOrWhiteSpace(token) || !_tokenHelper.ValidateResetPasswordToken(token))
             {
                 _logger.LogWarning($"Invalid or expired token received.");
@@ -165,7 +173,6 @@ namespace Bookstore.Controllers
             }
 
             string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-           
 
             bool result = await _userBL.ResetPassword(email, resetPassword);
 
@@ -189,29 +196,30 @@ namespace Bookstore.Controllers
             });
         }
 
-            [Authorize]
-            [HttpGet]
-            public async Task<IActionResult> GetUserById()
+        [Authorize]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<UserDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<object>))]
+        public async Task<IActionResult> GetUserById()
+        {
+            int id = int.Parse(User.FindFirst("UserId")?.Value);
+            _logger.LogInformation($"Fetching user profile for UserId: {id}");
+
+            var user = await _userBL.GetUserByIdAsync(id);
+
+            if (user == null)
             {
-                int id = int.Parse(User.FindFirst("UserId")?.Value);
-                _logger.LogInformation($"Fetching user profile for UserId: {id}");
-
-                var user = await _userBL.GetUserByIdAsync(id);
-
-                if (user == null)
+                _logger.LogWarning($"User with ID {id} not found.");
+                return NotFound(new ResponseModel<object>
                 {
-                    _logger.LogWarning($"User with ID {id} not found.");
-                    return NotFound(new ResponseModel<object>
-                    {
-                        Success = false,
-                        Message = $"User with ID {id} not found.",
-                        Data = null
-                    });
-                }
-                _logger.LogInformation($"User profile fetched successfully for UserId: {id}");
-                return Ok(new ResponseModel<UserDTO> { Success = true, Message = "User profile fetched successfully", Data = user });
-            
+                    Success = false,
+                    Message = $"User with ID {id} not found.",
+                    Data = null
+                });
+            }
+            _logger.LogInformation($"User profile fetched successfully for UserId: {id}");
+            return Ok(new ResponseModel<UserDTO> { Success = true, Message = "User profile fetched successfully", Data = user });
         }
-
     }
+
 }

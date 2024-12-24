@@ -51,6 +51,8 @@ try
     builder.Services.AddTransient<IAddressBL, AddressBL>();
     builder.Services.AddTransient<IOrdersRepo, OrdersRepo>();
     builder.Services.AddTransient<IOrdersBL, OrdersBL>();
+    builder.Services.AddTransient<IFeedbacksRepo, FeedbacksRepo>();
+    builder.Services.AddTransient<IFeedbackBL, FeedbackBL>();
 
   
 

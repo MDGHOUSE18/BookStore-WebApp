@@ -22,9 +22,10 @@ namespace Bookstore.Controllers
         }
 
         [HttpPost("{addressId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<OrderDTO>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<Exception>))]
         public async Task<IActionResult> AddOrder(int addressId)
         {
-
             int userId = int.Parse(User.FindFirst("UserId")?.Value);
             try
             {
@@ -35,12 +36,19 @@ namespace Bookstore.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while adding order for user {UserId}", userId);
-                return StatusCode(500, new ResponseModel<System.Exception> { Success = false, Message = "An error occurred while adding the order." ,Data=ex});
+                return StatusCode(500, new ResponseModel<Exception>
+                {
+                    Success = false,
+                    Message = "An error occurred while adding the order.",
+                    Data = ex
+                });
             }
         }
 
         [HttpPut("{orderId}")]
-        public async Task<IActionResult> CancelOrder([FromQuery] int statusId,int orderId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<OrderDTO>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<OrderDTO>))]
+        public async Task<IActionResult> CancelOrder([FromQuery] int statusId, int orderId)
         {
             try
             {
@@ -51,11 +59,17 @@ namespace Bookstore.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while cancelling order {OrderId}", orderId);
-                return StatusCode(500, new ResponseModel<OrderDTO> { Success = false, Message = "An error occurred while cancelling the order." });
+                return StatusCode(500, new ResponseModel<OrderDTO>
+                {
+                    Success = false,
+                    Message = "An error occurred while cancelling the order."
+                });
             }
         }
 
         [HttpGet("{orderId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<OrderDTO>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<OrderDTO>))]
         public async Task<IActionResult> GetOrder(int orderId)
         {
             try
@@ -67,27 +81,41 @@ namespace Bookstore.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching details for order {OrderId}", orderId);
-                return StatusCode(500, new ResponseModel<OrderDTO> { Success = false, Message = "An error occurred while fetching the order details." });
+                return StatusCode(500, new ResponseModel<OrderDTO>
+                {
+                    Success = false,
+                    Message = "An error occurred while fetching the order details."
+                });
             }
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<List<OrderDTO>>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ResponseModel<List<OrderDTO>>))]
         public async Task<IActionResult> GetOrders()
         {
-
             int userId = int.Parse(User.FindFirst("UserId")?.Value);
             try
             {
                 _logger.LogInformation("Fetching all orders for user {UserId}", userId);
                 var result = await _ordersBL.GetOrdersAsync(userId);
-                return Ok(new ResponseModel<List<OrderDTO>> { Success = true, Message = "Orders fetched successfully", Data = result });
+                return Ok(new ResponseModel<List<OrderDTO>>
+                {
+                    Success = true,
+                    Message = "Orders fetched successfully",
+                    Data = result
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching orders for user {UserId}", userId);
-                return StatusCode(500, new ResponseModel<List<OrderDTO>> { Success = false, Message = "An error occurred while fetching the orders." });
+                return StatusCode(500, new ResponseModel<List<OrderDTO>>
+                {
+                    Success = false,
+                    Message = "An error occurred while fetching the orders."
+                });
             }
         }
-
     }
+
 }
