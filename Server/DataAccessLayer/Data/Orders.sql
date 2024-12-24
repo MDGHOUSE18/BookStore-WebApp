@@ -10,188 +10,185 @@ VALUES
     ('Delivered'),
     ('Canceled');
 
-
 CREATE TABLE Orders (
     OrderId INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL,
-    CartId INT,
     AddressID INT NOT NULL,
-    Quantity INT NOT NULL, 
-    TotalPrice DECIMAL(10, 2),
-    OrdateDate DATE,
-    Status INT,  
-
-    CONSTRAINT FK_Orders_UserID FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    CONSTRAINT FK_Orders_CartID FOREIGN KEY (CartId) REFERENCES Cart(CartId),
+    TotalPrice DECIMAL(10, 2) NOT NULL,
+    TotalDiscountedPrice DECIMAL(10, 2) NOT NULL,
+    OrderDate DATE NOT NULL,
+    UpdatedAt DATETIME DEFAULT GETDATE(),
+    Status INT NOT NULL,
+    
+    CONSTRAINT FK_Orders_UserID FOREIGN KEY (UserId) REFERENCES Users(UserId),
     CONSTRAINT FK_Orders_AddressID FOREIGN KEY (AddressID) REFERENCES AddressTable(AddressID),
-    CONSTRAINT FK_Orders_Status FOREIGN KEY (Status) REFERENCES OrderStatus(OrderStatusId) 
+    CONSTRAINT FK_Orders_Status FOREIGN KEY (Status) REFERENCES OrderStatus(OrderStatusId)
 );
 
+SELECT * from OrderDetails
+CREATE TABLE OrderDetails (
+    OrderDetailId INT IDENTITY(1,1) PRIMARY KEY,
+    OrderId INT NOT NULL,
+    BookId INT NOT NULL,
+    Quantity INT NOT NULL,
+    Price DECIMAL(10, 2) NOT NULL,
+    DiscountedPrice DECIMAL(10, 2) NOT NULL,
+    
+    CONSTRAINT FK_OrderDetails_OrderId FOREIGN KEY (OrderId) REFERENCES Orders(OrderId),
+    CONSTRAINT FK_OrderDetails_BookId FOREIGN KEY (BookId) REFERENCES Books(BookId)
+);
 
-CREATE OR ALTER PROCEDURE usp_AddOrder
+SELECT * from Orders
+
+
+CREATE OR ALTER PROCEDURE usp_CreateOrder
     @UserId INT,
-    @CartId INT = NULL,
-    @AddressID INT,
-    @Quantity INT,
-    @TotalPrice DECIMAL(10, 2) OUTPUT
+    @AddressId INT
 AS
 BEGIN
-    SET NOCOUNT ON;
+    DECLARE @TotalPrice DECIMAL(10, 2) = 0;
+    DECLARE @TotalDiscountedPrice DECIMAL(10, 2) = 0;
+    DECLARE @OrderId INT;
 
-    -- 1. Check if Cart Item exists if CartId is provided
-    IF @CartId IS NOT NULL
-    BEGIN
-        DECLARE @CartExists INT;
-        SELECT @CartExists = COUNT(*) FROM Cart WHERE CartId = @CartId;
-        
-        IF @CartExists = 0
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        SELECT 
+            @TotalPrice = SUM(COALESCE(b.Price, 0) * COALESCE(c.Quantity, 0)),
+            @TotalDiscountedPrice = SUM(COALESCE(b.DiscountedPrice, b.Price, 0) * COALESCE(c.Quantity, 0))
+        FROM 
+            Cart c
+        INNER JOIN 
+            Books b ON c.BookId = b.BookId
+        WHERE 
+            c.UserId = @UserId;
+
+        IF @TotalPrice <= 0 OR @TotalDiscountedPrice <= 0
         BEGIN
-            RAISERROR('Cart item does not exist', 16, 1);
+            ROLLBACK TRANSACTION;
+            RAISERROR ('Invalid price or discounted price', 16, 1);
             RETURN;
-        END
-    END
+        END;
 
-    -- 2. Check if the quantity is greater than or equal to the stock quantity
-    DECLARE @StockQuantity INT;
-    SELECT @StockQuantity = StockQuantity FROM Books WHERE BookId = (SELECT BookId FROM Cart WHERE CartId = @CartId);
+        IF EXISTS (
+            SELECT 1 
+            FROM Cart c
+            INNER JOIN Books b ON c.BookId = b.BookId
+            WHERE c.UserId = @UserId AND c.Quantity > b.StockQuantity
+        )
+        BEGIN
+            ROLLBACK TRANSACTION;
+            RAISERROR ('Insufficient stock', 16, 1);
+            RETURN;
+        END;
 
-    IF @Quantity > @StockQuantity
+        INSERT INTO Orders (UserId, AddressID, TotalPrice, TotalDiscountedPrice, OrderDate, Status)
+        VALUES (@UserId, @AddressId, @TotalPrice, @TotalDiscountedPrice, GETDATE(), 1);
+        
+        SET @OrderId = SCOPE_IDENTITY();
+
+        INSERT INTO OrderDetails (OrderId, BookId, Quantity, Price, DiscountedPrice)
+        SELECT 
+            @OrderId, 
+            c.BookId, 
+            COALESCE(c.Quantity, 0), 
+            COALESCE(b.Price, 0), 
+            COALESCE(b.DiscountedPrice, b.Price, 0)
+        FROM 
+            Cart c
+        INNER JOIN 
+            Books b ON c.BookId = b.BookId
+        WHERE 
+            c.UserId = @UserId;
+
+        UPDATE b
+        SET b.StockQuantity = b.StockQuantity - c.Quantity
+        FROM Cart c
+        INNER JOIN Books b ON c.BookId = b.BookId
+        WHERE c.UserId = @UserId;
+
+        DELETE FROM Cart WHERE UserId = @UserId;
+
+		SELECT 
+		o.OrderId, 
+		o.TotalPrice, 
+		o.TotalDiscountedPrice, 
+		o.OrderDate, 
+		o.Status
+		FROM Orders o
+		WHERE o.UserId = @UserId
+		AND o.OrderId = (
+			SELECT TOP 1 OrderId
+			FROM Orders
+			WHERE UserId = @UserId
+			ORDER BY OrderDate DESC, OrderId DESC
+		);
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
+END;
+
+CREATE OR ALTER PROCEDURE usp_UpdateOrderStatus
+    @OrderId INT,
+    @StatusId INT
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM OrderStatus WHERE OrderStatusId = @StatusId)
     BEGIN
-        RAISERROR('Insufficient stock for the requested quantity', 16, 1);
+        PRINT 'Invalid StatusId';
         RETURN;
     END
 
-    -- 3. Calculate total price based on quantity
-    DECLARE @PricePerItem DECIMAL(10, 2);
-    SELECT @PricePerItem = Price FROM Books WHERE BookId = (SELECT BookId FROM Cart WHERE CartId = @CartId);
-    
-    SET @TotalPrice = @Quantity * @PricePerItem;
+    UPDATE Orders
+    SET Status = @StatusId, UpdatedAt = GETDATE()
+    WHERE OrderId = @OrderId;
 
-    -- 4. Insert the order into the Orders table
-    INSERT INTO Orders (UserId, CartId, AddressID, Quantity, TotalPrice, OrdateDate, Status)
-    VALUES (@UserId, @CartId, @AddressID, @Quantity, @TotalPrice, GETDATE(), @Status);
-
-    -- 5. Update book quantity in Books table
-    UPDATE Books
-    SET StockQuantity = StockQuantity - @Quantity
-    WHERE BookId = (SELECT BookId FROM Cart WHERE CartId = @CartId);
-
-    -- 6. Remove the item from the Cart (if CartId is provided)
-    IF @CartId IS NOT NULL
+    IF @StatusId = 4 
     BEGIN
-        DELETE FROM Cart WHERE CartId = @CartId;
+        UPDATE b
+        SET b.StockQuantity = b.StockQuantity + od.Quantity
+        FROM OrderDetails od
+        INNER JOIN Books b ON od.BookId = b.BookId
+        WHERE od.OrderId = @OrderId;
     END
 
-    -- 7. Return order details
-    DECLARE @OrderId INT;
-    SELECT @OrderId = SCOPE_IDENTITY();
-    SELECT OrderId = @OrderId, UserId = @UserId, Quantity = @Quantity, TotalPrice = @TotalPrice, OrderDate = GETDATE();
+    PRINT 'Order status updated successfully';
 END;
-
 
 CREATE OR ALTER PROCEDURE usp_GetOrders
-	@UserId INT
+    @UserId INT
 AS
 BEGIN
-    SET NOCOUNT ON;
-
     SELECT 
-        o.OrderId,
-        o.UserId,
-        o.CartId,
-        o.AddressID,
-        o.Quantity,
-        o.TotalPrice,
-        o.OrdateDate,
-        os.OrderStatus AS Status
+        o.OrderId, 
+        o.TotalPrice, 
+        o.TotalDiscountedPrice, 
+        o.OrderDate, 
+        o.Status
     FROM Orders o
-    JOIN OrderStatus os ON o.Status = os.OrderStatusId
-	Where o.UserId=@UserId
-    ORDER BY o.OrdateDate DESC;
+    WHERE o.UserId = @UserId;
 END;
+
 
 CREATE OR ALTER PROCEDURE usp_GetOrder
     @OrderId INT
 AS
 BEGIN
-    SET NOCOUNT ON;
-
     SELECT 
-        o.OrderId,
-        o.UserId,
-        o.CartId,
-        o.AddressID,
-        o.Quantity,
-        o.TotalPrice,
-        o.OrdateDate,
-        os.OrderStatus AS Status
+        o.OrderId, 
+        b.Title AS BookTitle, 
+        b.Author, 
+        od.Quantity, 
+        (b.Price * od.Quantity) AS TotalPrice, 
+        (COALESCE(b.DiscountedPrice, b.Price) * od.Quantity) AS DiscountedPrice, 
+        o.OrderDate, 
+        o.Status
     FROM Orders o
-    JOIN OrderStatus os ON o.Status = os.OrderStatusId
-    WHERE o.OrderId = @OrderId;
+    INNER JOIN OrderDetails od ON o.OrderId = od.OrderId
+    INNER JOIN Books b ON od.BookId = b.BookId
+    WHERE o.OrderId =1 @OrderId;
 END;
 
-
-CREATE OR ALTER PROCEDURE usp_CancelOrder
-    @OrderId INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    -- 1. Check if the order exists
-    DECLARE @OrderExists INT;
-    SELECT @OrderExists = COUNT(*) FROM Orders WHERE OrderId = @OrderId;
-
-    IF @OrderExists = 0
-    BEGIN
-        RAISERROR('Order does not exist', 16, 1);
-        RETURN;
-    END
-
-    -- 2. Get current status of the order
-    DECLARE @CurrentStatus INT;
-    DECLARE @Quantity INT;
-    DECLARE @BookId INT;
-
-    SELECT 
-        @CurrentStatus = Status,
-        @Quantity = Quantity,
-        @BookId = (SELECT BookId FROM Cart WHERE CartId = (SELECT CartId FROM Orders WHERE OrderId = @OrderId)) -- Get BookId from Cart (if CartId is available)
-    FROM Orders WHERE OrderId = @OrderId;
-
-    -- 3. Check if the order is already canceled
-    IF @CurrentStatus = (SELECT OrderStatusId FROM OrderStatus WHERE OrderStatus = 'Canceled')
-    BEGIN
-        RAISERROR('Order is already canceled', 16, 1);
-        RETURN;
-    END
-
-    -- 4. Update order status to 'Canceled'
-    DECLARE @CanceledStatusId INT;
-    SELECT @CanceledStatusId = OrderStatusId FROM OrderStatus WHERE OrderStatus = 'Canceled';
-
-    UPDATE Orders
-    SET Status = @CanceledStatusId
-    WHERE OrderId = @OrderId;
-
-    -- 5. Revert the stock quantity in Books table (if BookId is available)
-    IF @BookId IS NOT NULL
-    BEGIN
-        UPDATE Books
-        SET StockQuantity = StockQuantity + @Quantity
-        WHERE BookId = @BookId;
-    END
-
-    -- 6. Return the updated order details after cancellation
-    SELECT 
-        o.OrderId,
-        o.UserId,
-        o.CartId,
-        o.AddressID,
-        o.Quantity,
-        o.TotalPrice,
-        o.OrdateDate,
-        os.OrderStatus AS Status
-    FROM Orders o
-    JOIN OrderStatus os ON o.Status = os.OrderStatusId
-    WHERE o.OrderId = @OrderId;
-END;

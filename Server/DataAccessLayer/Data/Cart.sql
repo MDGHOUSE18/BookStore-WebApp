@@ -1,5 +1,6 @@
 use Bookstore;
 
+
 CREATE TABLE Cart (
     CartId INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL,
@@ -9,6 +10,8 @@ CREATE TABLE Cart (
     CONSTRAINT FK_Cart_Book FOREIGN KEY (BookId) REFERENCES Books(BookId)
 );
 
+
+
 CREATE OR ALTER PROCEDURE usp_AddCartItem
     @UserId INT,
     @BookId INT,
@@ -17,18 +20,35 @@ AS
 BEGIN
     IF EXISTS (SELECT 1 FROM Cart WHERE UserId = @UserId AND BookId = @BookId)
     BEGIN
-        -- If the item already exists in the cart, update the quantity
         UPDATE Cart
         SET Quantity = Quantity + @Quantity
         WHERE UserId = @UserId AND BookId = @BookId;
     END
     ELSE
     BEGIN
-        -- If the item does not exist, insert a new row
+        -- Insert a new item into the cart
         INSERT INTO Cart (UserId, BookId, Quantity)
         VALUES (@UserId, @BookId, @Quantity);
     END
+
+    SELECT 
+        c.CartId,
+        c.BookId,
+        b.Title,
+        b.Author,
+        b.Price * c.Quantity AS TotalPrice, 
+        b.DiscountedPrice * c.Quantity AS TotalDiscountedPrice,  
+        b.ImageUrl,
+        c.Quantity AS CartQuantity
+    FROM 
+        Cart c
+    INNER JOIN 
+        Books b ON c.BookId = b.BookId
+    WHERE 
+        c.UserId = @UserId AND c.BookId = @BookId;
 END;
+
+
 
 CREATE OR ALTER PROCEDURE usp_GetCartItems
     @UserId INT
@@ -37,21 +57,14 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
+        c.CartId,                            
         c.BookId,
         b.Title,
         b.Author,
-        b.Price,
-        CASE 
-            WHEN b.DiscountedPrice > 0 THEN b.Price - (b.Price * b.DiscountedPrice / 100) 
-            ELSE b.Price 
-        END AS DiscountedPrice,
+        b.Price * c.Quantity AS TotalPrice,  
+        b.DiscountedPrice * c.Quantity AS TotalDiscountedPrice,
         b.ImageUrl,
-        b.StockQuantity,
-        c.Quantity AS CartQuantity,
-        c.Quantity * CASE 
-            WHEN b.DiscountedPrice > 0 THEN b.Price - (b.Price * b.DiscountedPrice / 100) 
-            ELSE b.Price 
-        END AS TotalPrice
+        c.Quantity AS CartQuantity           
     FROM 
         Cart c
     INNER JOIN 
@@ -60,20 +73,15 @@ BEGIN
         c.UserId = @UserId;
 END;
 
-EXEC usp_GetCartItems @UserId = 1;
-Select * from Cart
+
 CREATE OR ALTER PROCEDURE usp_DeleteCart
     @CartID INT
 AS
 BEGIN
     DELETE FROM Cart
     WHERE CartId = @CartID;
-
-    --IF @@ROWCOUNT > 0
-    --    RETURN 1;
-    --ELSE
-    --    RETURN 0;
 END;
+
 
 
 CREATE OR ALTER PROCEDURE usp_RemoveAllFromCart
@@ -83,3 +91,4 @@ BEGIN
     DELETE FROM Cart
     WHERE UserID = @UserID;
 END;
+
