@@ -6,6 +6,7 @@ using DataAccessLayer.Repositories;
 using DataAccessLayer.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
@@ -46,8 +47,14 @@ try
     builder.Services.AddTransient<ICartBL, CartBL>();
     builder.Services.AddTransient<IWishListRepo, WishListRepo>();
     builder.Services.AddTransient<IWishListBL, WishListBL>();
+    builder.Services.AddTransient<IAddressRepo, AddressRepo>();
+    builder.Services.AddTransient<IAddressBL, AddressBL>();
+    builder.Services.AddTransient<IOrdersRepo, OrdersRepo>();
+    builder.Services.AddTransient<IOrdersBL, OrdersBL>();
 
-    // JWT Authentication configuration
+  
+
+    // Add authentication and authorization services
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -80,6 +87,8 @@ try
             ClockSkew = TimeSpan.Zero
         };
     });
+
+
 
 
     // Add controllers to the application

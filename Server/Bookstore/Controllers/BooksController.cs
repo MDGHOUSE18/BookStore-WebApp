@@ -5,12 +5,13 @@ using Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Bookstore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles="Admin")]
     public class BooksController : ControllerBase
     {
         private readonly IBooksBL _booksBL;
@@ -25,6 +26,7 @@ namespace Bookstore.Controllers
         [HttpPost]
         public async Task<IActionResult> AddBook([FromBody] AddBookDTO bookDTO)
         {
+            _logger.LogInformation("Starting AddBook operation.");
             //int adminId = int.Parse(User.FindFirst("UserId")?.Value);
             try
             {
@@ -35,6 +37,7 @@ namespace Bookstore.Controllers
                     Message = $"Book added successfully with name {bookDTO.Title}",
                     Data = result
                 };
+                _logger.LogInformation("Book added successfully.");
                 return Ok(response);
             }
             catch (Exception ex)

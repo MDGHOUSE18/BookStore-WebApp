@@ -17,7 +17,7 @@ namespace BusinessLayer.Services
         {
             this._cardRepo = cartRepo;
         }
-        public async Task<bool> AddCartItemAsync(AddCartDTO cart,int userId)
+        public async Task<CartItemDTO> AddCartItemAsync(AddCartDTO cart,int userId)
         {
             return await _cardRepo.AddCartItemAsync(cart, userId);
         }

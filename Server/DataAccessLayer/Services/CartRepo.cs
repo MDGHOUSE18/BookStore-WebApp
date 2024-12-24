@@ -6,10 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataAccessLayer.Services
 {
@@ -22,7 +19,7 @@ namespace DataAccessLayer.Services
             this._conString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<bool> AddCartItemAsync(AddCartDTO cart,int userId)
+        public async Task<CartItemDTO> AddCartItemAsync(AddCartDTO cart, int userId)
         {
             using (SqlConnection con = new SqlConnection(_conString))
             {
@@ -31,41 +28,29 @@ namespace DataAccessLayer.Services
                 cmd.Parameters.AddWithValue("@UserId", userId);
                 cmd.Parameters.AddWithValue("@BookId", cart.BookId);
                 cmd.Parameters.AddWithValue("@Quantity", cart.Quantity);
-                await con.OpenAsync();
-                int result = await cmd.ExecuteNonQueryAsync();
-                return result > 0;
-                //SqlDataReader reader = await command.ExecuteReaderAsync();
-                //if (await reader.ReadAsync())
-                //{
-                //    return new CartItemDTO
-                //    {
-                //        Title = reader["Title"].ToString(),
-                //        Author = reader["Author"].ToString(),
-                //        Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                //        DiscountedPrice = reader.IsDBNull(reader.GetOrdinal("DiscountedPrice"))
-                //            ? (decimal?)null
-                //            : reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
-                //        ImageUrl = reader["ImageUrl"].ToString(),
-                //        StockQuantity = reader.GetInt32(reader.GetOrdinal("StockQuantity"))
-                //    };
-                //}
-            }
-            //return null;
-        }
-
-        public async Task<bool> DeleteCartAsync(int cartId)
-        {
-            using (SqlConnection con = new SqlConnection(_conString))
-            {
-                SqlCommand cmd = new SqlCommand("usp_DeleteCart", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@CartID", cartId);
 
                 await con.OpenAsync();
 
-                int result = await cmd.ExecuteNonQueryAsync();
-                return result > 0;
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new CartItemDTO
+                        {
+                            CartId = reader.GetInt32(reader.GetOrdinal("CartId")),
+                            BookId = reader.GetInt32(reader.GetOrdinal("BookId")),
+                            Title = reader["Title"].ToString(),
+                            Author = reader["Author"].ToString(),
+                            TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
+                            TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("TotalDiscountedPrice")),
+                            ImageUrl = reader["ImageUrl"].ToString(),
+                            CartQuantity = reader.GetInt32(reader.GetOrdinal("CartQuantity"))
+                        };
+                    }
+                }
             }
+
+            return null;
         }
 
         public async Task<List<CartItemDTO>> GetCartItemsAsync(int userId)
@@ -88,14 +73,14 @@ namespace DataAccessLayer.Services
                     {
                         var cartItem = new CartItemDTO
                         {
+                            CartId = reader.GetInt32(reader.GetOrdinal("CartId")),
+                            BookId = reader.GetInt32(reader.GetOrdinal("BookId")),
                             Title = reader["Title"].ToString(),
                             Author = reader["Author"].ToString(),
-                            Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                            DiscountedPrice = reader.IsDBNull(reader.GetOrdinal("DiscountedPrice"))
-                                ? (decimal?)null
-                                : reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
+                            TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
+                            TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("TotalDiscountedPrice")),
                             ImageUrl = reader["ImageUrl"].ToString(),
-                            StockQuantity = reader.GetInt32(reader.GetOrdinal("StockQuantity"))
+                            CartQuantity = reader.GetInt32(reader.GetOrdinal("CartQuantity"))
                         };
 
                         cartItems.Add(cartItem);
@@ -106,6 +91,20 @@ namespace DataAccessLayer.Services
             return cartItems;
         }
 
+        public async Task<bool> DeleteCartAsync(int cartId)
+        {
+            using (SqlConnection con = new SqlConnection(_conString))
+            {
+                SqlCommand cmd = new SqlCommand("usp_DeleteCart", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@CartID", cartId);
+
+                await con.OpenAsync();
+
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+        }
 
         public async Task<bool> RemoveAllCartItemsAsync(int userId)
         {
@@ -121,6 +120,5 @@ namespace DataAccessLayer.Services
                 return result > 0;
             }
         }
-
     }
 }
