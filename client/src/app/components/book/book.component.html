@@ -1,12 +1,44 @@
-<app-header></app-header>
+<!-- <app-header></app-header> -->
 <div class="container">
-  <h1>Books</h1>
+  <p>Home/<span>Book({{bookId}})</span></p>
   <div class="book-content">
-    <div class="img">
+    <!-- <div class="img">
       <img
         [src]="book.imageurl ? book.imageurl : '../../../assets/books/1.png'"
         alt="bookimg"
       />
+    </div> -->
+    <div class="book-image-container">
+      <div class="book-image-wrapper">
+        <!-- <img
+          [src]="
+            'data:image/' +
+            (bookDetails?.imageFormat || 'jpeg') +
+            ';base64,' +
+            (bookDetails?.image || '')
+          "
+          class="book-image"
+        /> -->
+        <img
+          [src]="book.imageurl ? book.imageurl : '../../../assets/books/1.png'"
+          alt="bookimg"
+          class="book-image"
+        />
+      </div>
+
+      <div class="action-buttons">
+        <div *ngIf="bookQuantity > 0; else addToCartTemplate">
+          <button class="btn-circle" (click)="decreaseQuantity()">-</button>
+          <span>{{ bookQuantity }}</span>
+          <button class="btn-circle" (click)="increaseQuantity()">+</button>
+        </div>
+        <ng-template #addToCartTemplate>
+          <button class="btn btn-primary" (click)="toggleCart()">
+            Add to Cart
+          </button>
+        </ng-template>
+        <button class="btn btn-secondary">Wishlist</button>
+      </div>
     </div>
     <div class="details">
       <span class="title">{{ book.title }}</span>
@@ -14,10 +46,31 @@
       <span>
         <b>Rs. {{ book.price }}</b> <s>Rs.{{ book.discountedPrice }}</s>
       </span>
-      <hr>
+      <hr />
       <span>Book Details</span>
-      <p>{{book.description}}</p>
+      <p>{{ book.description }}</p>
+      <div class="customer-feedback">
+        <h5>Customer Feedback</h5>
+        <div class="feedback-box">
+          <span class="rating-label">Overall Rating</span>
+          <div class="stars">☆☆☆☆☆</div>
+          <textarea
+            class="feedback-text"
+            placeholder="Write your feedback here..."
+          ></textarea>
+          <button class="btn btn-submit">Submit</button>
+        </div>
+      </div>
+      <div class="customer-reviews">
+        <span class="review-name">Ankit</span>
+        <div class="review-stars">★★★☆☆</div>
+        <p class="review-text">Good Product. Enjoyed reading it.</p>
+      </div>
+      <div class="customer-reviews">
+        <span class="review-name">Shwetha</span>
+        <div class="review-stars">★★★☆☆</div>
+        <p class="review-text">Good Product. Enjoyed reading it.</p>
+      </div>
     </div>
   </div>
 </div>
-<!-- <app-footer></app-footer> -->

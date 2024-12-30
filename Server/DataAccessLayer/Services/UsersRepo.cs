@@ -80,36 +80,45 @@ namespace DataAccessLayer.Repositories
             }
         }
 
-        public Task<string> Login(LoginDTO user)
+        public async Task<LoginResDTO> Login(LoginDTO user)
         {
             user.Password = EncodePasswordToBase64(user.Password);
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("usp_Login", con);
-                cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new SqlCommand("usp_Login", con)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
                 cmd.Parameters.AddRange(
                     new SqlParameter[]
-                        {
-                            new SqlParameter("@Email", user.Email),
-                            new SqlParameter("@Password", user.Password)
-                        }
-                    );
+                    {
+                new SqlParameter("@Email", user.Email),
+                new SqlParameter("@Password", user.Password)
+                    }
+                );
 
-                con.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
+                await con.OpenAsync();
+                SqlDataReader reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
                     string role = reader["Role"].ToString();
                     int Id = Convert.ToInt32(reader["UserId"]);
                     var token = _tokenHelper.GenerateJwtToken(Id, user.Email, role);
-                    return Task.FromResult(token);
+
+                    return new LoginResDTO
+                    {
+                        Token = token,
+                        name = reader["FullName"].ToString(),
+                        email = reader["Email"].ToString()
+                    };
                 }
 
-                return Task.FromResult<string>(null);
+                return null;
             }
-
         }
+
+
 
         public ForgetPasswordDTO ForgetPassword(string email)
         {

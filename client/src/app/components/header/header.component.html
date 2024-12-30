@@ -18,8 +18,10 @@
   <div class="left">
     <div class="side-icons">
       <div class="icon-container">
-        <img src="../../../assets/home/profile.png" alt="profile" />
-        <span>Profile</span>
+        <button [matMenuTriggerFor]="menu" style="cursor: pointer;">
+          <img src="../../../assets/home/profile.png" alt="profile" />
+          <span>{{userName}}</span>
+        </button>
       </div>
       <div class="icon-container">
         <img src="../../../assets/home/cart.png" alt="cart" />
@@ -28,3 +30,22 @@
     </div>
   </div>
 </mat-toolbar>
+
+<mat-menu #menu="matMenu" yPosition="below" class="custom-menu">
+  <div class="menu-content">
+    <p class="heading">Welcome</p>
+    <p class="description">To access account and manage orders</p>
+    <button mat-stroked-button class="login-btn" (click)="openLoginDialog()" *ngIf="!islogin">Login/SignUp</button>
+    <button mat-stroked-button class="login-btn" (click)="onLogout()" *ngIf="islogin">Logout</button>
+    <hr class="divider" />
+    <button class="menu-item">
+      <img src="../../../assets/header/orders.png" alt="Orders" class="icon" />
+      Orders
+    </button>
+    <button class="menu-item">
+      <img src="../../../assets/header/wishlist.png" alt="Wishlist" class="icon" />
+      Wishlist
+    </button>
+  </div>
+</mat-menu>
+
