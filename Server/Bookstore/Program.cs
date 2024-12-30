@@ -148,7 +148,19 @@ try
     });
     builder.Services.AddMassTransitHostedService();
 
+    // Configure CORS
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+    });
+
     var app = builder.Build();
+
 
     // Configure the HTTP request pipeline
     if (app.Environment.IsDevelopment())
@@ -157,9 +169,11 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseHttpsRedirection();
 
-    
+    // Use CORS
+    app.UseCors("AllowAll");
+
+    app.UseHttpsRedirection();
 
     // Use authentication and authorization middleware
     app.UseAuthentication();

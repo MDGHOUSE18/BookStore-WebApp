@@ -1,0 +1,28 @@
+<app-header></app-header>
+<div class="home">
+  <h1>Books</h1>
+  <div class="home-content">
+    <div class="card" *ngFor="let book of displayedBooks" [routerLink]="['/book', book.bookID]"><!-- [routerLink]="'/book'"> -->
+      <div class="img">
+        <img [src]="book.imageData ? book.imageData : '../../../assets/books/1.png'" alt="bookimg" />
+      </div>
+      <div class="details">
+        <p>{{ book.title }}</p>
+        <p>by {{ book.author }}</p>
+        <p><b>Rs. {{ book.price }}</b>  <s>Rs.{{ book.discountedPrice }}</s></p>
+      </div>
+    </div>
+  </div>
+  <!-- <mat-paginator
+    [length]="totalBooks"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[12, 24, 36]"
+    (page)="onPageChange($event)">
+  </mat-paginator> -->
+  <mat-paginator
+    [length]="totalBooks"
+    [pageSize]="pageSize"
+    (page)="onPageChange($event)">
+  </mat-paginator>
+</div>
+<app-footer></app-footer>
