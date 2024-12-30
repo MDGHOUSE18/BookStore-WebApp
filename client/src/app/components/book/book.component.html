@@ -1,0 +1,23 @@
+<app-header></app-header>
+<div class="container">
+  <h1>Books</h1>
+  <div class="book-content">
+    <div class="img">
+      <img
+        [src]="book.imageurl ? book.imageurl : '../../../assets/books/1.png'"
+        alt="bookimg"
+      />
+    </div>
+    <div class="details">
+      <span class="title">{{ book.title }}</span>
+      <span>by {{ book.author }}</span>
+      <span>
+        <b>Rs. {{ book.price }}</b> <s>Rs.{{ book.discountedPrice }}</s>
+      </span>
+      <hr>
+      <span>Book Details</span>
+      <p>{{book.description}}</p>
+    </div>
+  </div>
+</div>
+<!-- <app-footer></app-footer> -->

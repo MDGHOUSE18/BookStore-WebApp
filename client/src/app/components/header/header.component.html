@@ -1,0 +1,30 @@
+<mat-toolbar class="custom-header">
+  <div class="right">
+    <div class="logo" [routerLink]="['']">
+      <img src="../../../assets/home/header-logo.png" alt="header-logo" />
+      <span class="custom-span">Bookstore</span>
+    </div>
+    <div class="search-container">
+      <button mat-icon-button class="search-icon-button" aria-label="Search">
+        <img
+          src="../../../assets/home/search.png"
+          alt="Search Icon"
+          class="search-icon"
+        />
+      </button>
+      <input matInput placeholder="Search" value="" class="search-input" />
+    </div>
+  </div>
+  <div class="left">
+    <div class="side-icons">
+      <div class="icon-container">
+        <img src="../../../assets/home/profile.png" alt="profile" />
+        <span>Profile</span>
+      </div>
+      <div class="icon-container">
+        <img src="../../../assets/home/cart.png" alt="cart" />
+        <span>Cart</span>
+      </div>
+    </div>
+  </div>
+</mat-toolbar>

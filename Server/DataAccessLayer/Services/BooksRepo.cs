@@ -34,7 +34,9 @@ namespace DataAccessLayer.Services
                 cmd.Parameters.AddWithValue("@Description", bookDTO.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Price", bookDTO.Price);
                 cmd.Parameters.AddWithValue("@DiscountedPrice", bookDTO.DiscountedPrice ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@ImageUrl", bookDTO.ImageUrl ?? (object)DBNull.Value);
+                //cmd.Parameters.AddWithValue("@ImageUrl", bookDTO.ImageUrl ?? (object)DBNull.Value);
+                byte[] imageBytes = string.IsNullOrEmpty(bookDTO.ImageUrl) ? null : Convert.FromBase64String(bookDTO.ImageUrl);
+                cmd.Parameters.AddWithValue("@ImageData", imageBytes ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@StockQuantity", bookDTO.StockQuantity);
 
                 SqlParameter outputBookIdParam = new SqlParameter
@@ -91,7 +93,7 @@ namespace DataAccessLayer.Services
                         Description = reader["Description"].ToString(),
                         Price = (decimal)reader["Price"],
                         DiscountedPrice = reader["DiscountedPrice"] as decimal?,
-                        ImageUrl = reader["ImageUrl"].ToString(),
+                        ImageUrl = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
                         StockQuantity = (int)reader["StockQuantity"],
                         DateAdded = (DateTime)reader["DateAdded"],
                         LastUpdated = (DateTime)reader["LastUpdated"]
@@ -114,7 +116,9 @@ namespace DataAccessLayer.Services
                 cmd.Parameters.AddWithValue("@Description", bookDTO.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Price", bookDTO.Price);
                 cmd.Parameters.AddWithValue("@DiscountedPrice", bookDTO.DiscountedPrice ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@ImageUrl", bookDTO.ImageUrl ?? (object)DBNull.Value);
+                //cmd.Parameters.AddWithValue("@ImageUrl", bookDTO.ImageUrl ?? (object)DBNull.Value);
+                byte[] imageBytes = string.IsNullOrEmpty(bookDTO.ImageUrl) ? null : Convert.FromBase64String(bookDTO.ImageUrl);
+                cmd.Parameters.AddWithValue("@ImageData", imageBytes ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@StockQuantity", bookDTO.StockQuantity);
 
                 await con.OpenAsync();
@@ -166,7 +170,7 @@ namespace DataAccessLayer.Services
                         Description = reader["Description"].ToString(),
                         Price = (decimal)reader["Price"],
                         DiscountedPrice = reader["DiscountedPrice"] as decimal?,
-                        ImageUrl = reader["ImageUrl"].ToString(),
+                        ImageUrl = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
                         StockQuantity = (int)reader["StockQuantity"],
                         DateAdded = (DateTime)reader["DateAdded"],
                         LastUpdated = (DateTime)reader["LastUpdated"]
