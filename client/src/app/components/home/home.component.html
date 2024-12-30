@@ -1,15 +1,14 @@
-<app-header></app-header>
 <div class="home">
-  <h1>Books</h1>
+  <h1>Books<span>({{totalBooks}})</span></h1>
   <div class="home-content">
     <div class="card" *ngFor="let book of displayedBooks" [routerLink]="['/book', book.bookID]"><!-- [routerLink]="'/book'"> -->
       <div class="img">
         <img [src]="book.imageData ? book.imageData : '../../../assets/books/1.png'" alt="bookimg" />
       </div>
       <div class="details">
-        <p>{{ book.title }}</p>
-        <p>by {{ book.author }}</p>
-        <p><b>Rs. {{ book.price }}</b>  <s>Rs.{{ book.discountedPrice }}</s></p>
+        <p class="title">{{ book.title }}</p>
+        <p class="author">by {{ book.author }}</p>
+        <p class="price"><b>Rs. {{ book.discountedPrice }}</b>  <s>Rs.{{ book.price }}</s></p>
       </div>
     </div>
   </div>
@@ -25,4 +24,4 @@
     (page)="onPageChange($event)">
   </mat-paginator>
 </div>
-<app-footer></app-footer>
+

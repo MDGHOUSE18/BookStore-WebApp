@@ -23,7 +23,7 @@ namespace BusinessLayer.Services
         {
             return _userRepo.CreateUser(user);
         }
-        public async Task<string> Login(LoginDTO user)
+        public async Task<LoginResDTO> Login(LoginDTO user)
         {
             return await _userRepo.Login(user);
         }

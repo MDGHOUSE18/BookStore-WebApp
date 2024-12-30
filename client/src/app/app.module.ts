@@ -14,6 +14,9 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 // Reactive Forms
 import { ReactiveFormsModule } from '@angular/forms';
@@ -24,6 +27,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HomeComponent } from './components/home/home.component';
 import { BookComponent } from './components/book/book.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +37,7 @@ import { BookComponent } from './components/book/book.component';
     FooterComponent,
     HomeComponent,
     BookComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,7 +51,10 @@ import { BookComponent } from './components/book/book.component';
     MatToolbarModule,
     HttpClientModule,
     MatTableModule,
-    MatPaginatorModule 
+    MatPaginatorModule,
+    MatMenuModule,
+    MatDialogModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent],

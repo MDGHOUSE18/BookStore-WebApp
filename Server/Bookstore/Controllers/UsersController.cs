@@ -84,16 +84,16 @@ namespace Bookstore.Controllers
         {
             _logger.LogInformation($"Login attempt for email: {user.Email}");
 
-            var token = await _userBL.Login(user);
+            var loginResDTO = await _userBL.Login(user);
 
-            if (token == null)
+            if (loginResDTO.Token == null)
             {
                 _logger.LogWarning($"Invalid login credentials for email: {user.Email}");
                 return BadRequest(new ResponseModel<string> { Success = false, Message = "Invalid login credentials", Data = null });
             }
 
             _logger.LogInformation($"Login successful for email: {user.Email}");
-            return Ok(new ResponseModel<string> { Success = true, Message = "Login successful", Data = token });
+            return Ok(new ResponseModel<LoginResDTO> { Success = true, Message = "Login successful", Data = loginResDTO });
         }
 
         [HttpPost]

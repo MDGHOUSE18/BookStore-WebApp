@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { FloatLabelType } from '@angular/material/form-field';
+import { UserService } from 'src/app/Services/userService/user.service';
 
 @Component({
   selector: 'app-login-signup',
@@ -18,19 +20,41 @@ export class LoginSignupComponent implements OnInit {
 
   isPasswordVisible: boolean = false;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder, 
+    private userService: UserService,
+    private dialogRef: MatDialogRef<LoginSignupComponent>
+  ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
+        ],
+      ],
     });
 
     this.signupForm = this.fb.group({
-      fullName: ['', [Validators.required]],
+      fullName: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      mobileNumber: ['', [Validators.required, Validators.minLength(10)]],
+      passwordHash: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+          ),
+        ],
+      ],
+      phone: ['', [Validators.required, Validators.minLength(10)]],
     });
   }
 
@@ -44,20 +68,45 @@ export class LoginSignupComponent implements OnInit {
 
   onLoginSubmit(): void {
     if (this.loginForm.valid) {
-      console.log('Login Form Values:', this.loginForm.value);
+      this.userService.login(this.loginForm.value).subscribe(
+        (response:any) => {
+          if (response.success) {
+            const { token, name, role, email } = response.data;
+            localStorage.setItem('token', token);
+            localStorage.setItem('name', name);
+            // localStorage.setItem('role', role);
+            localStorage.setItem('email', email);
+            console.log('User data saved in local storage');
+            this.dialogRef.close();
+          } else {
+            console.error('Login failed:', response.message);
+          }
+        },
+        (error) => {
+          console.error('Login failed:', error);
+        }
+      );
     } else {
       console.log('Login form is invalid');
     }
   }
+  
 
   onSignupSubmit(): void {
     if (this.signupForm.valid) {
-      console.log('SignUp Form Values:', this.signupForm.value);
+      console.log(this.signupForm.value);
+      this.userService.register(this.signupForm.value).subscribe(
+        (response) => {
+          console.log('Registration successful:', response);
+        },
+        (error) => {
+          console.error('Registration failed:', error);
+        }
+      );
     } else {
       console.log('SignUp form is invalid');
     }
   }
-
 
   getFloatLabelValue(): FloatLabelType {
     return this.floatLabelControl.value || 'auto';

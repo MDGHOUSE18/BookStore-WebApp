@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 export class BookComponent implements OnInit {
   book: any;
   bookId: number = 0;
+  bookQuantity:number=0;
 
   constructor(private bookService: BooksService, private route: ActivatedRoute) {}
 
@@ -31,5 +32,33 @@ export class BookComponent implements OnInit {
         console.error('Error fetching book:', error);
       }
     );
+  }
+  toggleCart() {
+    // if (this.bookQuantity === 0) {
+    //   // Add the whole book object with a quantity of 1
+    //   this.cartService.addToCart({ ...this.bookDetails, quantity: 1 });
+    // } else {
+    //   // Add the book to cart with an updated quantity
+    //   this.cartService.addToCart({ ...this.bookDetails, quantity: 1 });
+    // }
+    // this.bookQuantity = this.cartService.getBookQuantity(this.bookDetails.id);
+  }
+
+  decreaseQuantity() {
+    // if (this.bookQuantity > 1) {
+    //   this.cartService.addToCart({ ...this.bookDetails, quantity: -1 });
+    //   this.bookQuantity = this.cartService.getBookQuantity(this.bookDetails.id);
+    //   console.log(this.cartService.getBookQuantity(this.bookDetails.id));
+    // } else {
+    //   this.cartService.removeFromCart(this.bookDetails.id);
+    //   this.bookQuantity = 0;
+    //   console.log(this.cartService.getBookQuantity(this.bookDetails.id));
+    // }
+  }
+
+  increaseQuantity() {
+    // this.cartService.addToCart({ ...this.bookDetails, quantity: 1 });
+    // this.bookQuantity = this.cartService.getBookQuantity(this.bookDetails.id);
+    // console.log(this.cartService.getBookQuantity(this.bookDetails.id));
   }
 }

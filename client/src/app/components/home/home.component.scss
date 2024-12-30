@@ -7,6 +7,13 @@
   margin-left: 10vw;
   flex-direction: column;
 }
+.home h1{
+  padding: 1rem;
+}
+.home h1 span {
+  font-size: 1rem;
+  color: grey;
+}
 
 .home-content {
   // padding: 2rem 4rem;
@@ -49,4 +56,24 @@
 
 .card .details {
   padding: 1rem;
+}
+
+.title {
+  font-size: 12px;
+  color: black;
+  font-weight: 500;
+  // margin: 2px 0;
+}
+
+.author {
+  font-size: 10px;
+  color: grey;
+  // margin: 2px 0;
+}
+
+.price {
+  font-size: 12px;
+  color: black;
+  font-weight: 500;
+  // margin: 2px 0;
 }
