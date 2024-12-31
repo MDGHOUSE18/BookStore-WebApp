@@ -1,0 +1,59 @@
+<div class="outer" *ngIf="!token; else Cart">
+  <div class="inner">
+    <h1>PLEASE LOG IN</h1>
+    <p>Login to view items in your cart.</p>
+    <img src="../../../assets/header/Page-1@2x.png" alt="" />
+    <button mat-stroked-button class="login-btn" (click)="openDialog()">
+      Login/SignUp
+    </button>
+  </div>
+</div>
+<ng-template #Cart>
+  <div class="outer">
+    <div class="cart">
+      <p class="top">
+        <button>Home/</button>
+        <span>My Cart</span>
+      </p>
+      <div class="cart-content">
+        <div class="heading">
+          <p>My Cart</p>
+        </div>
+        <div class="cartItems">
+          <div class="item" *ngFor="let item of cartItems">
+            <div class="right">
+              <div class="img">
+                <img src="../../../assets/books/1.png" alt="{{ item.title }}" />
+              </div>
+              <div class="details">
+                <p class="title">{{ item.title }}</p>
+                <p class="author">by {{ item.author }}</p>
+                <p>
+                  <span class="discountedPrice">{{
+                    item.discountedPrice*item.cartQuantity | currency
+                  }}</span>
+                  &nbsp;
+                  <span class="price">{{ item.price*item.cartQuantity | currency }}</span>
+                </p>
+                <div class="quantity-control">
+                  <button mat-icon-button (click)="decreaseQuantity(item)" [disabled]="item.cartQuantity <= 1">
+                    -
+                  </button>
+                  <span>{{ item.cartQuantity }}</span>
+                  <button mat-icon-button (click)="increaseQuantity(item)" [disabled]="item.cartQuantity >= 10">
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="left">
+              <button mat-icon-button (click)="deleteCartItem(item.cartId)">
+                <img src="../../../assets/common/delete.png" alt="delete" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

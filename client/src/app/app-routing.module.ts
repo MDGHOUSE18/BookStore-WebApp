@@ -4,6 +4,9 @@ import { LoginSignupComponent } from './components/login-signup/login-signup.com
 import { HomeComponent } from './components/home/home.component';
 import { BookComponent } from './components/book/book.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { WishlistComponent } from './components/wishlist/wishlist.component';
+import { CartComponent } from './components/cart/cart.component';
+import { OrdersComponent } from './components/orders/orders.component';
 
 const routes: Routes = [
   {path:'',redirectTo:'/home',pathMatch:'full'},
@@ -12,7 +15,10 @@ const routes: Routes = [
     component: DashboardComponent,
     children: [
       { path: 'home', component: HomeComponent },
-      { path: 'book/:id', component: BookComponent }
+      { path: 'book/:id', component: BookComponent },
+      {path:'wishlist',component:WishlistComponent},
+      {path:'cart',component:CartComponent},
+      {path:'orders',component:OrdersComponent}
     ],
   },
   { path: 'login', component: LoginSignupComponent },

@@ -28,6 +28,9 @@ import { FooterComponent } from './components/footer/footer.component';
 import { HomeComponent } from './components/home/home.component';
 import { BookComponent } from './components/book/book.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { WishlistComponent } from './components/wishlist/wishlist.component';
+import { CartComponent } from './components/cart/cart.component';
+import { OrdersComponent } from './components/orders/orders.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     HomeComponent,
     BookComponent,
     DashboardComponent,
+    WishlistComponent,
+    CartComponent,
+    OrdersComponent,
   ],
   imports: [
     BrowserModule,

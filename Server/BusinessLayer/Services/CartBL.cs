@@ -36,5 +36,10 @@ namespace BusinessLayer.Services
         {
             return await _cardRepo.RemoveAllCartItemsAsync(userId);
         }
+
+        public async Task<bool> UpdateCartItemQuantityAsync(UpdateCartItemDTO dto,int userId)
+        {
+            return await _cardRepo.UpdateCartItemQuantityAsync(dto, userId);
+        }
     }
 }

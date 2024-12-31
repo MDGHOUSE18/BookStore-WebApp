@@ -128,6 +128,32 @@ namespace Bookstore.Controllers
                 Data = result
             });
         }
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<bool>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<bool>))]
+        public async Task<IActionResult> UpdateCartItemQuantity([FromBody] UpdateCartItemDTO dto)
+        {
+            int userId = int.Parse(User.FindFirst("UserId").Value);
+            _logger.LogInformation("Attempting to update cart item for UserId {UserId}, BookId {BookId} with new quantity {NewQuantity}", userId, dto.BookId, dto.NewQuantity);
+            
+            var result = await _cartBL.UpdateCartItemQuantityAsync(dto,userId);
+            if (result)
+            {
+                return Ok(new ResponseModel<bool>
+                {
+                    Success = true,
+                    Message = "Cart item updated successfully.",
+                    Data = result
+                });
+            }
+            return BadRequest(new ResponseModel<bool>
+            {
+                Success = false,
+                Message = "Failed to update the cart item.",
+                Data = result
+            });
+        }
+
     }
 
 }

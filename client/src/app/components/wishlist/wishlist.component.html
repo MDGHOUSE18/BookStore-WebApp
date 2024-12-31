@@ -1,0 +1,51 @@
+<div class="outer" *ngIf="!token; else Wishlist">
+  <div class="inner">
+    <h1>PLEASE LOG IN</h1>
+    <p>Login to view items in your wishlist.</p>
+    <img src="../../../assets/header/Page-1@2x.png" alt="" />
+    <button mat-stroked-button class="login-btn" (click)="openDialog()">
+      Login/SignUp
+    </button>
+  </div>
+</div>
+<ng-template #Wishlist>
+  <div class="outer">
+    <div class="wishlist">
+      <p class="top">
+        <button>Home/</button>
+        <span>My Wishlist</span>
+      </p>
+      <div class="wishlist-content">
+        <div class="heading">
+          <p>My Wishlist</p>
+        </div>
+        <div class="wishListItems">
+          <div class="item" *ngFor="let item of wishListItems">
+            <div class="right">
+              <div class="img">
+                <img src="../../../assets/books/1.png" alt="{{ item.title }}" />
+              </div>
+              <div class="details">
+                <p class="title">{{ item.title }}</p>
+                <p class="author">by {{ item.author }}</p>
+                <p>
+                  <span class="discountedPrice">{{
+                    item.discountedPrice | currency
+                  }}</span>
+                  &nbsp;
+                  <span class="price">{{ item.price | currency }}</span>
+                </p>
+              </div>
+            </div>
+            <div class="left">
+            <button mat-icon-button (click)="deleteWishList(item.wishListId)">
+
+                <img  src="../../../assets/common/delete.png" alt="delete" >
+            </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
