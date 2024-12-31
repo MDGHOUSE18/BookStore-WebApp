@@ -53,13 +53,15 @@ namespace DataAccessLayer.Services
                     {
                         wishList.Add(new WishListItemDTO
                         {
+                            WishListId= reader.GetInt32(reader.GetOrdinal("WishListId")),
                             BookId = reader.GetInt32(reader.GetOrdinal("BookId")),
                             Title = reader.GetString(reader.GetOrdinal("Title")),
                             Author = reader.GetString(reader.GetOrdinal("Author")),
                             Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                             DiscountedPrice = reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
-                            ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl")),
+                            //ImageUrl = reader.GetString(reader.GetOrdinal("ImageData")),
                             StockQuantity = reader.GetInt32(reader.GetOrdinal("StockQuantity"))
+
                         });
                     }
                 }

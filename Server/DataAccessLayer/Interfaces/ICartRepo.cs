@@ -8,5 +8,6 @@ namespace DataAccessLayer.Interfaces
         Task<bool> DeleteCartAsync(int cartId);
         Task<List<CartItemDTO>> GetCartItemsAsync(int userId);
         Task<bool> RemoveAllCartItemsAsync(int userId);
+        Task<bool> UpdateCartItemQuantityAsync(UpdateCartItemDTO dto,int userId);
     }
 }

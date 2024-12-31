@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FloatLabelType } from '@angular/material/form-field';
+import { DataService } from 'src/app/Services/dataService/data.service';
 import { UserService } from 'src/app/Services/userService/user.service';
 
 @Component({
@@ -23,7 +24,8 @@ export class LoginSignupComponent implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private userService: UserService,
-    private dialogRef: MatDialogRef<LoginSignupComponent>
+    private dialogRef: MatDialogRef<LoginSignupComponent>,
+    private dataService:DataService
   ) {}
 
   ngOnInit(): void {
@@ -73,9 +75,11 @@ export class LoginSignupComponent implements OnInit {
           if (response.success) {
             const { token, name, role, email } = response.data;
             localStorage.setItem('token', token);
-            localStorage.setItem('name', name);
-            // localStorage.setItem('role', role);
             localStorage.setItem('email', email);
+            localStorage.setItem('name', name);
+            this.dataService.setUsername(name)
+            this.dataService.setAccessToken(token)
+            this.dataService.setUserEmail(email)
             console.log('User data saved in local storage');
             this.dialogRef.close();
           } else {

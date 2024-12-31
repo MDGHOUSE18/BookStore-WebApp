@@ -18,34 +18,73 @@
   <div class="left">
     <div class="side-icons">
       <div class="icon-container">
-        <button [matMenuTriggerFor]="menu" style="cursor: pointer;">
+        <button [matMenuTriggerFor]="menu" style="cursor: pointer">
           <img src="../../../assets/home/profile.png" alt="profile" />
-          <span>{{userName}}</span>
+          <span>{{ userName }}</span>
         </button>
       </div>
       <div class="icon-container">
-        <img src="../../../assets/home/cart.png" alt="cart" />
-        <span>Cart</span>
+        <button style="cursor: pointer" [routerLink]="['cart']">
+          <img src="../../../assets/home/cart.png" alt="cart" />
+          <span>Cart</span>
+        </button>
       </div>
     </div>
   </div>
 </mat-toolbar>
 
 <mat-menu #menu="matMenu" yPosition="below" class="custom-menu">
-  <div class="menu-content">
+  <div class="menu-content" *ngIf="!token; else loggedOut">
     <p class="heading">Welcome</p>
     <p class="description">To access account and manage orders</p>
-    <button mat-stroked-button class="login-btn" (click)="openLoginDialog()" *ngIf="!islogin">Login/SignUp</button>
-    <button mat-stroked-button class="login-btn" (click)="onLogout()" *ngIf="islogin">Logout</button>
+    <button mat-stroked-button class="login-btn" (click)="openLoginDialog()">
+      Login/SignUp
+    </button>
     <hr class="divider" />
-    <button class="menu-item">
+    <button class="menu-item" [routerLink]="['orders']">
       <img src="../../../assets/header/orders.png" alt="Orders" class="icon" />
       Orders
     </button>
-    <button class="menu-item">
-      <img src="../../../assets/header/wishlist.png" alt="Wishlist" class="icon" />
+    <button class="menu-item" [routerLink]="['wishlist']">
+      <img
+        src="../../../assets/header/wishlist.png"
+        alt="Wishlist"
+        class="icon"
+      />
       Wishlist
     </button>
   </div>
-</mat-menu>
+  <ng-template #loggedOut>
+    <div class="menu-content">
+      <p class="heading">Hello {{ userName }},</p>
 
+      <button class="menu-item" [routerLink]="['orders']">
+        <img
+          src="../../../assets/header/porfile.png"
+          alt="Profile"
+          class="icon"
+        />
+        Profile
+      </button>
+      <button class="menu-item" [routerLink]="['orders']">
+        <img
+          src="../../../assets/header/orders.png"
+          alt="Orders"
+          class="icon"
+        />
+        Orders
+      </button>
+      <button class="menu-item" [routerLink]="['wishlist']">
+        <img
+          src="../../../assets/header/wishlist.png"
+          alt="Wishlist"
+          class="icon"
+        />
+        Wishlist
+      </button>
+      <button mat-stroked-button class="login-btn" (click)="onLogout()">
+        Logout
+      </button>
+    </div>
+  </ng-template>
+</mat-menu>

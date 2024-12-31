@@ -12,9 +12,10 @@ namespace Common.DTO
         public int BookId { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
-        public decimal TotalPrice { get; set; }
-        public decimal TotalDiscountedPrice { get; set; }
+        public decimal Price { get; set; }
+        public decimal DiscountedPrice { get; set; }
         public string ImageUrl { get; set; }
         public int CartQuantity { get; set; }
+        public int StockQuantity { get; set; }
     }
 }

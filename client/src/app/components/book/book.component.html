@@ -37,14 +37,15 @@
             Add to Cart
           </button>
         </ng-template>
-        <button class="btn btn-secondary">Wishlist</button>
+        <button class="btn btn-secondary" (click)="addToWishlist()" *ngIf="!isWishlisted">Wishlist</button>
+        <button class="btn btn-secondary" *ngIf="isWishlisted">Already added to Wishlist</button>
       </div>
     </div>
     <div class="details">
       <span class="title">{{ book.title }}</span>
       <span>by {{ book.author }}</span>
       <span>
-        <b>Rs. {{ book.price }}</b> <s>Rs.{{ book.discountedPrice }}</s>
+        <b>$ {{ book.price }}</b> &nbsp;<s>${{ book.discountedPrice }}</s>
       </span>
       <hr />
       <span>Book Details</span>
