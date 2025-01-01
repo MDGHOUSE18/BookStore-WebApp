@@ -55,6 +55,7 @@ export class HeaderComponent implements OnInit{
       console.log(this.token)
       console.log('Logged out and session cleared');
       // alert('logout succesfully')
+      this.userName = null
       this.snackBar.open('Logout successfully', 'Close', { duration: 2000 });
       this.islogin=false;
     }

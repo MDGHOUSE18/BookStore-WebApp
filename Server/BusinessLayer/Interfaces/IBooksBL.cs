@@ -9,5 +9,6 @@ namespace BusinessLayer.Interfaces
         Task<List<BookDTO>> GetAllBooksAsync();
         Task<BookDTO> GetBookByIdAsync(int bookId);
         Task<BookDTO> UpdateBookAsync(int bookId, AddBookDTO bookDTO);
+        Task<bool> UpdateBookImageAsync(int bookId, byte[] imageData);
     }
 }

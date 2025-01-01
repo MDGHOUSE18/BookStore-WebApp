@@ -49,7 +49,7 @@
       <span class="title">{{ book.title }}</span>
       <span>by {{ book.author }}</span>
       <span>
-        <b>$ {{ book.price }}</b> &nbsp;<s>${{ book.discountedPrice }}</s>
+        <b>{{ book.discountedPrice| currency:'INR' }}</b> &nbsp;<s>{{ book.price| currency:'INR' }}</s>
       </span>
       <hr />
       <span>Book Details</span>

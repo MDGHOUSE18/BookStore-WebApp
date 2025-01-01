@@ -1,4 +1,4 @@
-<div class="outer" *ngIf="!token; else Wishlist">
+<div class="outer" *ngIf="!token; else Wishlist" [ngStyle]="{ width: 'auto', 'align-items': 'center' }">
   <div class="inner">
     <h1>PLEASE LOG IN</h1>
     <p>Login to view items in your wishlist.</p>
@@ -30,10 +30,10 @@
                 <p class="author">by {{ item.author }}</p>
                 <p>
                   <span class="discountedPrice">{{
-                    item.discountedPrice | currency
+                    item.discountedPrice | currency:'INR'
                   }}</span>
                   &nbsp;
-                  <span class="price">{{ item.price | currency }}</span>
+                  <span class="price">{{ item.price | currency:'INR' }}</span>
                 </p>
               </div>
             </div>

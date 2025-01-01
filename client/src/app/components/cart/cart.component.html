@@ -1,4 +1,4 @@
-<div class="outer" *ngIf="!token; else Cart">
+<div class="outer" *ngIf="!token; else Cart" [ngStyle]="{ width: 'auto', 'align-items': 'center' }">
   <div class="inner">
     <h1>PLEASE LOG IN</h1>
     <p>Login to view items in your cart.</p>
@@ -30,10 +30,10 @@
                 <p class="author">by {{ item.author }}</p>
                 <p>
                   <span class="discountedPrice">{{
-                    item.discountedPrice*item.cartQuantity | currency
+                    item.discountedPrice*item.cartQuantity | currency:'INR'
                   }}</span>
                   &nbsp;
-                  <span class="price">{{ item.price*item.cartQuantity | currency }}</span>
+                  <span class="price">{{ item.price*item.cartQuantity | currency:'INR' }}</span>
                 </p>
                 <div class="quantity-control">
                   <button mat-icon-button (click)="decreaseQuantity(item)" [disabled]="item.cartQuantity <= 1">

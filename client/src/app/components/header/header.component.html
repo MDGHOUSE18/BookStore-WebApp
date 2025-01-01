@@ -20,7 +20,7 @@
       <div class="icon-container">
         <button [matMenuTriggerFor]="menu" style="cursor: pointer">
           <img src="../../../assets/home/profile.png" alt="profile" />
-          <span>{{ userName }}</span>
+          <span>{{ userName || 'Profile' }}</span>
         </button>
       </div>
       <div class="icon-container">

@@ -193,5 +193,27 @@ namespace DataAccessLayer.Services
 
             return books;
         }
+
+
+        public async Task<bool> UpdateBookImageAsync(int bookId, byte[] imageData)
+        {
+            using (SqlConnection con = new SqlConnection(_conString))
+            {
+                SqlCommand cmd = new SqlCommand("usp_UpdateBookImage", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@BookID", bookId);
+                cmd.Parameters.AddWithValue("@ImageData", imageData);
+
+                await con.OpenAsync();
+
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                return rowsAffected > 0;
+
+            }
+            
+
+            
+        }
     }
 }

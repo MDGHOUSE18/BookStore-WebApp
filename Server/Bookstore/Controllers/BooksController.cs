@@ -199,6 +199,61 @@ namespace Bookstore.Controllers
                 });
             }
         }
+
+        [HttpPut("/image")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<string>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<string>))]
+        public async Task<IActionResult> UpdateBookImage([FromForm]UpdateBookImageDto dto)
+        {
+            _logger.LogInformation("Attempting to update image for book with ID: {BookId}", dto.BookId);
+
+            if (dto.Image == null || dto.Image.Length == 0)
+            {
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "No file uploaded."
+                });
+            }
+
+            try
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await dto.Image.CopyToAsync(memoryStream);
+                    byte[] imageData = memoryStream.ToArray();
+
+                    bool isUpdated = await _booksBL.UpdateBookImageAsync(dto.BookId, imageData);
+
+                    if (isUpdated)
+                    {
+                        return Ok(new ResponseModel<string>
+                        {
+                            Success = true,
+                            Message = "Image updated successfully."
+                        });
+                    }
+
+                    _logger.LogWarning("Book not found with ID: {BookId}", dto.BookId);
+                    return NotFound(new ResponseModel<string>
+                    {
+                        Success = false,
+                        Message = "Book not found."
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while updating image for book: {BookId}", dto.BookId);
+                return BadRequest(new ResponseModel<string>
+                {
+                    Success = false,
+                    Message = "An error occurred while updating the image."
+                });
+            }
+        }
+
     }
 
 }

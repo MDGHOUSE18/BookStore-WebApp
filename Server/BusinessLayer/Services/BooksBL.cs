@@ -42,5 +42,10 @@ namespace BusinessLayer.Services
         {
             return await _bookRepo.GetAllBooksAsync();
         }
+
+        public async Task<bool> UpdateBookImageAsync(int bookId, byte[] imageData)
+        {
+            return await _bookRepo.UpdateBookImageAsync(bookId, imageData);
+        }
     }
 }

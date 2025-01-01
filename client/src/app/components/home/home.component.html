@@ -31,7 +31,7 @@
           <p class="title">{{ book.title }}</p>
           <p class="author">by {{ book.author }}</p>
           <p class="price">
-            <b>$ {{ book.discountedPrice }}</b> &nbsp; <s>${{ book.price }}</s>
+            <b>{{ book.discountedPrice| currency:'INR' }}</b> &nbsp; <s>{{ book.price| currency:'INR' }}</s>
           </p>
         </div>
       </div>
