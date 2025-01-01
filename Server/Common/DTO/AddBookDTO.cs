@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.DTO.Books
+namespace Common.DTO
 {
     public class AddBookDTO
     {
@@ -26,8 +27,8 @@ namespace Common.DTO.Books
 
         public decimal? DiscountedPrice { get; set; }
 
-        [Url(ErrorMessage = "Invalid Image URL")]
-        public string ImageUrl { get; set; }
+        //[Url(ErrorMessage = "Invalid Image URL")]
+        public IFormFile Image { get; set; }
 
         [Required(ErrorMessage = "Stock Quantity is required")]
         [Range(0, int.MaxValue, ErrorMessage = "Stock Quantity must be a positive value")]

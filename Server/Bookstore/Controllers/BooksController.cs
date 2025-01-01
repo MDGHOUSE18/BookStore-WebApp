@@ -1,5 +1,4 @@
 ﻿using BusinessLayer.Interfaces;
-using Common.DTO.Books;
 using Common.DTO;
 using Common;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +25,7 @@ namespace Bookstore.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<BookDTO>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<BookDTO>))]
-        public async Task<IActionResult> AddBook([FromBody] AddBookDTO bookDTO)
+        public async Task<IActionResult> AddBook([FromForm] AddBookDTO bookDTO)
         {
             _logger.LogInformation("Starting AddBook operation for book: {Title}", bookDTO.Title);
 
@@ -166,7 +165,7 @@ namespace Bookstore.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel<BookDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ResponseModel<BookDTO>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ResponseModel<BookDTO>))]        
-        public async Task<IActionResult> UpdateBook(int bookId, [FromBody] AddBookDTO bookDTO)
+        public async Task<IActionResult> UpdateBook(int bookId, [FromForm] AddBookDTO bookDTO)
         {
             _logger.LogInformation("Attempting to update book with ID: {BookId}", bookId);
 

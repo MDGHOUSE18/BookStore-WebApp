@@ -22,6 +22,10 @@ export class DataService {
   private wishList = new BehaviorSubject([]);
   WishList = this.wishList.asObservable();
 
+  // Cart data management
+  private cartItems = new BehaviorSubject<any[]>([]);
+  CartItems = this.cartItems.asObservable();
+
   constructor() {}
 
   setUsername(data: string): void {
@@ -44,6 +48,39 @@ export class DataService {
 
   setWishListData(data: any) {
     this.wishList.next(data);
+  }
+
+  // Cart functions
+  setCartData(data: any[]): void {
+    this.cartItems.next(data);
+  }
+
+  addToCart(item: any): void {
+    const currentCart = this.cartItems.value;
+    const existingItem = currentCart.find(cartItem => cartItem.bookId === item.bookId);
+
+    if (existingItem) {
+      existingItem.cartQuantity++;
+    } else {
+      item.cartQuantity = 1;
+      currentCart.push(item);
+    }
+
+    this.setCartData(currentCart);
+  }
+
+  updateCartItemQuantity(bookId: number, quantity: number): void {
+    const currentCart = this.cartItems.value;
+    const item = currentCart.find(cartItem => cartItem.bookId === bookId);
+    if (item) {
+      item.cartQuantity += quantity;
+      this.setCartData(currentCart);
+    }
+  }
+
+  removeFromCart(bookId: number): void {
+    const currentCart = this.cartItems.value.filter(cartItem => cartItem.bookId !== bookId);
+    this.setCartData(currentCart);
   }
   
 }

@@ -1,5 +1,4 @@
 ﻿using Common.DTO;
-using Common.DTO.Books;
 
 namespace DataAccessLayer.Interfaces
 {

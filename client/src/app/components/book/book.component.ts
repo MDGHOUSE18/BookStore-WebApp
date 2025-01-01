@@ -5,46 +5,60 @@ import { WishlistService } from 'src/app/Services/wishlistService/wishlist.servi
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DataService } from 'src/app/Services/dataService/data.service';
 import { Subscription } from 'rxjs';
+import { CartService } from 'src/app/Services/cartService/cart.service';
 
 @Component({
   selector: 'app-book',
   templateUrl: './book.component.html',
-  styleUrls: ['./book.component.scss']
+  styleUrls: ['./book.component.scss'],
 })
 export class BookComponent implements OnInit {
   book: any;
   bookId: number = 0;
-  bookQuantity:number=0;
-  isWishlisted:boolean=true;
-  wishListItem:any[]=[]
-  subscription!:Subscription
+  bookQuantity: number = 0;
+  isWishlisted: boolean = true;
+  wishListItem: any[] = [];
+  isCartlisted: boolean = false;
+  cartListItem: any[] = [];
+  subscription!: Subscription;
+  token:string|null = null;
 
   constructor(
-    private bookService: BooksService, 
+    private bookService: BooksService,
     private route: ActivatedRoute,
-    private wishlistService : WishlistService,
+    private wishlistService: WishlistService,
     private snackBar: MatSnackBar,
-    private dataService : DataService
+    private dataService: DataService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
-    this.wishlistService.getAllWishlist().subscribe((response)=>{
+    this.subscription=this.dataService.AccessToken.subscribe((result)=>this.token=result)
+    this.cartService.getCarts().subscribe((response) => {
+      this.cartListItem = response.data;
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        const listItem = this.cartListItem.find(
+          (item: any) => item.bookId == id
+        );
+        this.bookQuantity = listItem.cartQuantity;
+        this.isCartlisted = !!listItem;
+        // console.log('Cart List Item:', listItem);
+        // console.log('Is Cart Listed:', this.isCartlisted);
+      }
+    });
+    this.wishlistService.getAllWishlist().subscribe((response) => {
       this.wishListItem = response.data;
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
-        const listItem = this.wishListItem.find((item: any) => item.bookId == id);
-        this.isWishlisted = !!listItem; 
+        const listItem = this.wishListItem.find(
+          (item: any) => item.bookId == id
+        );
+
+        this.isWishlisted = !!listItem;
       }
-    })
-    // this.subscription = this.dataService.WishList.subscribe((result) => {
-    //   this.wishListItem = result;
-    //   const id = this.route.snapshot.paramMap.get('id');
-    //   if (id) {
-    //     const listItem = this.wishListItem.find((item: any) => item.bookId == id);
-    //     this.isWishlisted = !!listItem; // Set true if found, false otherwise
-    //   }
-    // });
-  
+    });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.bookId = +id;
@@ -56,52 +70,89 @@ export class BookComponent implements OnInit {
     this.bookService.getBook(this.bookId).subscribe(
       (response: any) => {
         this.book = response.data;
-        console.log(response)
+        console.log(response);
       },
       (error) => {
         console.error('Error fetching book:', error);
       }
     );
   }
-  toggleCart() {
-    // if (this.bookQuantity === 0) {
-    //   // Add the whole book object with a quantity of 1
-    //   this.cartService.addToCart({ ...this.bookDetails, quantity: 1 });
-    // } else {
-    //   // Add the book to cart with an updated quantity
-    //   this.cartService.addToCart({ ...this.bookDetails, quantity: 1 });
-    // }
-    // this.bookQuantity = this.cartService.getBookQuantity(this.bookDetails.id);
-  }
+  addToCart() {
+    let reqData = {
+      bookId: this.bookId,
+      quantity: 1,
+    };
+    console.log(reqData);
 
-  decreaseQuantity() {
-    // if (this.bookQuantity > 1) {
-    //   this.cartService.addToCart({ ...this.bookDetails, quantity: -1 });
-    //   this.bookQuantity = this.cartService.getBookQuantity(this.bookDetails.id);
-    //   console.log(this.cartService.getBookQuantity(this.bookDetails.id));
-    // } else {
-    //   this.cartService.removeFromCart(this.bookDetails.id);
-    //   this.bookQuantity = 0;
-    //   console.log(this.cartService.getBookQuantity(this.bookDetails.id));
-    // }
+    this.cartService.createCart(reqData).subscribe((response: any) => {
+      // console.log(response.message);
+      this.snackBar.open('Book added to cart successfully', 'Close', {
+        duration: 2000,
+      });
+      this.bookQuantity = 1;
+      this.isCartlisted = true;
+    });
   }
 
   increaseQuantity() {
-    // this.cartService.addToCart({ ...this.bookDetails, quantity: 1 });
-    // this.bookQuantity = this.cartService.getBookQuantity(this.bookDetails.id);
-    // console.log(this.cartService.getBookQuantity(this.bookDetails.id));
+    if (this.bookQuantity < this.book.stockQuantity && this.bookQuantity < 10) {
+      this.bookQuantity++;
+      this.updateCartItem(this.bookId, +1);
+    }else{
+      this.snackBar.open("you reached maximum quantity for cart", 'Close', {
+        duration: 2000,
+      });
+    }
   }
-  addToWishlist(){
+
+  decreaseQuantity() {
+    if (this.bookQuantity > 1) {
+      this.bookQuantity--;
+      this.updateCartItem(this.bookId, -1);
+    }else{
+      this.deleteCartItem()
+    }
+  }
+
+  updateCartItem(id: any, num: number) {
+    console.log('bookId ' + id + '  num : ' + num);
+
+    let reqData = {
+      bookId: id,
+      newQuantity: num,
+    };
+    this.cartService.updateCart(reqData).subscribe(
+      (response) => {
+        console.log('Cart updated successfully');
+        // console.log(response.message);
+      },
+      (error) => {
+        console.log('Error updating cart');
+      }
+    );
+  }
+  addToWishlist() {
     this.wishlistService.addBookToWishlist(this.bookId.toString()).subscribe(
       (response) => {
-        this.snackBar.open(this.book.title+'Book added to wishlist', 'Close', { duration: 4000 });
+        this.snackBar.open(
+          this.book.title + 'Book added to wishlist',
+          'Close',
+          { duration: 4000 }
+        );
         console.log('Book added to wishlist:', response);
         this.isWishlisted = true;
-        // this.getWishlist(); // Refresh wishlist
       },
       (error) => {
         console.error('Error adding book to wishlist:', error);
       }
     );
+  }
+  deleteCartItem(){
+    this.cartService.deleteCart(this.bookId.toString()).subscribe((response:any) => {
+      this.isCartlisted = !this.isCartlisted;
+      this.snackBar.open(response.message, 'Close', {
+        duration: 2000,
+      });
+    })
   }
 }

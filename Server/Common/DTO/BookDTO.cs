@@ -14,7 +14,7 @@ namespace Common.DTO
         public string Description { get; set; }
         public decimal Price { get; set; }
         public decimal? DiscountedPrice { get; set; }
-        public string ImageUrl { get; set; }
+        public string Image { get; set; }
         public int StockQuantity { get; set; }
         public int AdminUserID { get; set; }
         public DateTime DateAdded { get; set; }

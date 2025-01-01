@@ -67,7 +67,7 @@ namespace DataAccessLayer.Services
                         {
                             OrderId = reader.GetInt32(reader.GetOrdinal("OrderId")),
                             TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
-                            TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("TotalDiscountedPrice")),
+                            TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
                             OrderStatus = reader["Status"].ToString(),
                             OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
                         });

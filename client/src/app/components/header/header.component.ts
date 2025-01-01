@@ -17,7 +17,6 @@ export class HeaderComponent implements OnInit{
   subsription!:Subscription;
   token:string|null = null;
 
-
   constructor(
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
@@ -56,7 +55,7 @@ export class HeaderComponent implements OnInit{
       console.log(this.token)
       console.log('Logged out and session cleared');
       // alert('logout succesfully')
-      this.snackBar.open('Logout successful', 'Close', { duration: 2000 });
+      this.snackBar.open('Logout successfully', 'Close', { duration: 2000 });
       this.islogin=false;
     }
   }

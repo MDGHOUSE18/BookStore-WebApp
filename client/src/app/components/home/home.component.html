@@ -11,11 +11,20 @@
       >
         <!-- [routerLink]="'/book'"> -->
         <div class="img">
-          <img
+          <!-- <img
             [src]="
-              book.imageData ? book.imageData : '../../../assets/books/1.png'
+              book.image ? book.image : '../../../assets/books/1.png'
             "
             alt="bookimg"
+          /> -->
+          <img
+            [src]="
+              book.image
+                ? 'data:image/' + book.imageFormat + ';base64,' + book.image
+                : '../../../assets/books/1.png'
+            "
+            alt="{{ book.title || 'Default Title' }}"
+            class="book-image"
           />
         </div>
         <div class="details">

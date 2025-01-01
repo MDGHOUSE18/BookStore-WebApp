@@ -1,4 +1,4 @@
-use Bookstore;
+use BookstoresApp;
 
 CREATE TABLE WishList (
     WishListId INT IDENTITY(1,1) PRIMARY KEY,
@@ -25,6 +25,7 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
+		w.WishListId,
         w.BookId,
         b.Title,
         b.Author,
@@ -33,7 +34,7 @@ BEGIN
             WHEN b.DiscountedPrice > 0 THEN b.Price - (b.Price * b.DiscountedPrice / 100) 
             ELSE b.Price 
         END AS DiscountedPrice,
-        b.ImageUrl,
+        b.ImageData,
         b.StockQuantity
     FROM 
         WishList w
@@ -42,7 +43,7 @@ BEGIN
     WHERE 
         w.UserId = @UserId;
 END;
-
+EXEC usp_GetWishList @UserId = 2;
 
 CREATE OR ALTER PROCEDURE usp_DeleteItem
     @WishListId INT
@@ -60,3 +61,5 @@ BEGIN
     DELETE FROM WishList
     WHERE UserID = @UserID;
 END;
+
+Select * from WishList;

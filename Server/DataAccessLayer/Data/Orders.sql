@@ -1,4 +1,6 @@
-use Bookstore;
+use BookstoresApp;
+
+Truncate Table Orders
 
 CREATE TABLE OrderStatus (
     OrderStatusId INT IDENTITY(1,1) PRIMARY KEY,
@@ -83,7 +85,7 @@ BEGIN
         END;
 
         INSERT INTO Orders (UserId, AddressID, TotalPrice, TotalDiscountedPrice, OrderDate, Status)
-        VALUES (@UserId, @AddressId, @TotalPrice, @TotalDiscountedPrice, GETDATE(), 1);
+        VALUES (@UserId, @AddressId, @TotalPrice, @TotalDiscountedPrice, GETDATE(), 2);
         
         SET @OrderId = SCOPE_IDENTITY();
 
@@ -181,6 +183,7 @@ BEGIN
         o.OrderId, 
         b.Title AS BookTitle, 
         b.Author, 
+		b.ImageData,
         od.Quantity, 
         (b.Price * od.Quantity) AS TotalPrice, 
         (COALESCE(b.DiscountedPrice, b.Price) * od.Quantity) AS DiscountedPrice, 
@@ -189,6 +192,25 @@ BEGIN
     FROM Orders o
     INNER JOIN OrderDetails od ON o.OrderId = od.OrderId
     INNER JOIN Books b ON od.BookId = b.BookId
-    WHERE o.OrderId =1 @OrderId;
+    WHERE o.OrderId = @OrderId;
 END;
 
+CREATE OR ALTER PROCEDURE usp_GetOrders
+    @UserId INT
+AS
+BEGIN
+    SELECT 
+        o.OrderId, 
+        b.Title AS BookTitle, 
+        b.Author, 
+		b.ImageData,
+        od.Quantity, 
+        (b.Price * od.Quantity) AS TotalPrice, 
+        (COALESCE(b.DiscountedPrice, b.Price) * od.Quantity) AS DiscountedPrice, 
+        o.OrderDate, 
+        o.Status
+    FROM Orders o
+    INNER JOIN OrderDetails od ON o.OrderId = od.OrderId
+    INNER JOIN Books b ON od.BookId = b.BookId
+    WHERE o.UserId = @UserId;
+END;
