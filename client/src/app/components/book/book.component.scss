@@ -1,218 +1,234 @@
 .container {
-    width: 80vw;
-    display: flex;
-    justify-content: space-evenly;
-    margin-left: 10vw;
-    flex-direction: column;
-    font-family: 'Roboto', sans-serif;
-  }
-  .container p{
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    color: #878787;
-    display: block;
-  }
-  .container p span{
-    color: #333;
-    letter-spacing: 1px;
-  }
+  width: 80vw;
+  display: flex;
+  justify-content: space-evenly;
+  margin-left: 10vw;
+  flex-direction: column;
+  font-family: "Roboto", sans-serif;
+}
+.container p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: #878787;
+  display: block;
+}
+.container p span {
+  color: #333;
+  letter-spacing: 1px;
+}
+.book-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.book-content .img {
+  border: 1px solid black;
+  width: 40%;
+  padding: 1rem;
+}
+
+.book-content .details {
+  // border: 1px solid black;
+  width: 50%;
+  padding: 1rem;
+}
+
+.book-content .details span {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: #878787;
+  display: block;
+}
+
+.book-content .details span.title {
+  font-weight: 500;
+  color: #333;
+  letter-spacing: 1px;
+  font-size: 1.5rem;
+}
+
+.book-content .details span b {
+  color: #333;
+  font-size: 1.4rem;
+}
+
+.book-content .details span s {
+  color: #888;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+.book-image-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 40%;
+  min-width: 15%;
+  padding: 1rem;
+  align-items: center;
+}
+
+.book-image-wrapper {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.book-image {
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.action-buttons {
+  // margin-top: 10px;
+  padding: 1vw;
+  display: flex;
+  flex-direction: row;
+  gap: 1vw;
+  width: 100%;
+  // min-width: 5vw;
+  justify-content: space-between;
+}
+.action-buttons .btn {
+  padding: 1vw;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  // flex: 1;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+}
+.quantity-control button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  padding: 8px;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.quantity-control button:hover {
+  background-color: #e0e0e0;
+}
+
+.quantity-control button:disabled {
+  background-color: #d0d0d0;
+  cursor: pointer;
+}
+.quantity-control span {
+  font-size: 16px;
+  font-weight: bold;
+  // min-width: 30px;
+  text-align: center;
+  border: 1px solid #dbdbdb;
+  padding: 0.5vw 2vw;
+}
+
+.btn-secondary {
+  background-color: black;
+  color: white;
+}
+
+.customer-feedback {
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+.feedback-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.rating-label {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.stars {
+  font-size: 1.5rem;
+  color: black;
+}
+
+.feedback-text {
+  width: 90%;
+  height: 80px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: none;
+}
+
+.feedback-text:focus {
+  border-color: #5b9bd5;
+  outline: none;
+}
+
+.btn-submit {
+  align-self: flex-end;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: green;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background-color: darkgreen;
+}
+
+.customer-reviews {
+  padding-top: 10px;
+}
+
+.review-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.review-stars {
+  font-size: 1.2rem;
+  color: gold;
+}
+
+.review-text {
+  font-size: 1rem;
+  color: #555;
+  margin-top: 5px;
+}
+
+@media (max-width: 768px) {
   .book-content {
-    display: flex;
-    justify-content: space-between;
-    gap: 2rem;
+    flex-direction: column;
   }
-  
-  .book-content .img {
-    border: 1px solid black;
-    width: 40%;
-    padding: 1rem;
-  }
-  
-  .book-content .details {
-    // border: 1px solid black;
-    width: 50%;
-    padding: 1rem;
-  }
-  
-  .book-content .details span {
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    color: #878787;
-    display: block;
-  }
-  
-  .book-content .details span.title {
-    font-weight: 500;
-    color: #333;
-    letter-spacing: 1px;
-    font-size: 1.5rem;
-  }
-  
-  .book-content .details span b {
-    color: #333;
-    font-size: 1.4rem;
-  }
-  
-  .book-content .details span s {
-    color: #888;
-    font-size: 1rem;
-    margin-left: 0.5rem;
-  }
-  
   .book-image-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    max-width: 40%;
-    min-width: 15%;
+    max-width: 100%;
     padding: 1rem;
-    align-items: center;
   }
-  
-  .book-image-wrapper {
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .book-image {
-    width: 100%;
-    max-height: 250px;
-    object-fit: contain;
-    border-radius: 8px;
-  }
-  
-  .action-buttons {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    width: 100%;
-  }
-  
-  .action-buttons .btn {
-    padding: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    flex: 1;
-  }
-  
-  .btn-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: black;
-    font-size: 20px;
-    border: 1px solid #ddd;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    margin: 0 5px;
-    background-color: transparent;
-  }
-  
-  .btn-circle:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .btn-primary {
-    background-color: brown;
-    color: white;
-  }
-  
-  .btn-secondary {
-    background-color: black;
-    color: white;
-  }
-  
-  .customer-feedback {
-    margin-top: 20px;
-    padding-top: 10px;
-  }
-  
-  .feedback-box {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  
-  .rating-label {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .stars {
-    font-size: 1.5rem;
-    color: black;
-  }
-  
-  .feedback-text {
-    width: 90%;
-    height: 80px;
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    resize: none;
-  }
-  
-  .feedback-text:focus {
-    border-color: #5b9bd5;
-    outline: none;
-  }
-  
-  .btn-submit {
-    align-self: flex-end;
-    padding: 10px 20px;
-    font-size: 1rem;
-    color: white;
-    background-color: green;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .btn-submit:hover {
-    background-color: darkgreen;
-  }
-  
-  .customer-reviews {
-    padding-top: 10px;
-  }
-  
-  .review-name {
-    font-weight: bold;
-    font-size: 1.1rem;
-    color: #333;
-  }
-  
-  .review-stars {
-    font-size: 1.2rem;
-    color: gold;
-  }
-  
-  .review-text {
-    font-size: 1rem;
-    color: #555;
-    margin-top: 5px;
-  }
-  
-  @media (max-width: 768px) {
-    .book-content {
-      flex-direction: column;
-    }
-    .book-image-container {
-      max-width: 100%;
-      padding: 1rem;
-    }
-  }
-  
+}

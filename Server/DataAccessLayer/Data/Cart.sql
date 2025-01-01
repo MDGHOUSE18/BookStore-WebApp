@@ -1,4 +1,5 @@
-use Bookstore;
+use BookstoresApp;
+
 
 
 CREATE TABLE Cart (
@@ -36,9 +37,9 @@ BEGIN
         c.BookId,
         b.Title,
         b.Author,
-        b.Price * c.Quantity AS TotalPrice, 
-        b.DiscountedPrice * c.Quantity AS TotalDiscountedPrice,  
-        b.ImageUrl,
+        b.Price, 
+        b.DiscountedPrice,  
+        b.ImageData,
         c.Quantity AS CartQuantity
     FROM 
         Cart c
@@ -61,9 +62,10 @@ BEGIN
         c.BookId,
         b.Title,
         b.Author,
-        b.Price * c.Quantity AS TotalPrice,  
-        b.DiscountedPrice * c.Quantity AS TotalDiscountedPrice,
-        b.ImageUrl,
+        b.Price,  
+        b.DiscountedPrice,
+        b.ImageData,
+		b.StockQuantity,
         c.Quantity AS CartQuantity           
     FROM 
         Cart c
@@ -79,7 +81,7 @@ CREATE OR ALTER PROCEDURE usp_DeleteCart
 AS
 BEGIN
     DELETE FROM Cart
-    WHERE CartId = @CartID;
+    WHERE BookId = @CartID;
 END;
 
 
@@ -92,3 +94,14 @@ BEGIN
     WHERE UserID = @UserID;
 END;
 
+CREATE OR ALTER PROCEDURE usp_UpdateCartItemQuantity
+    @UserId INT,
+    @BookId INT,
+    @NewQuantity INT
+AS
+BEGIN
+    -- Update the cart item quantity
+    UPDATE Cart
+    SET Quantity = Quantity+@NewQuantity
+    WHERE UserId = @UserId AND BookId = @BookId;
+END;

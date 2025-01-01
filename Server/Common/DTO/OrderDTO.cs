@@ -16,5 +16,6 @@ namespace Common.DTO
         public DateTime? UpdatedAt { get; set; } 
         public string BookTitle { get; set; }
         public string Author { get; set; }
+        public string Image { get; set; }
     }
 }

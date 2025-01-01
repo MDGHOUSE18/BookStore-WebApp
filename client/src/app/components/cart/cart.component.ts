@@ -46,10 +46,10 @@ export class CartComponent {
     );
   }
 
-  deleteCartItem(cartId:any){
-    this.cartService.deleteCart(cartId).subscribe((response) => {
+  deleteCartItem(bookId:any){
+    this.cartService.deleteCart(bookId).subscribe((response) => {
       this.cartItems = this.cartItems.filter(
-        (item:any) => item.cartId !== cartId
+        (item:any) => item.bookId !== bookId
       );
     })
   }

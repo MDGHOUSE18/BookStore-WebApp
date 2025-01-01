@@ -1,4 +1,5 @@
-use Bookstore;
+use BookstoresApp;
+
 
 SELECT * FROM AddressTypeTable
 CREATE TABLE AddressTypeTable (

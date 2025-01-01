@@ -1,13 +1,11 @@
 ﻿using Common.DTO;
-using Common.DTO.Books;
 using DataAccessLayer.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace DataAccessLayer.Services
@@ -21,7 +19,6 @@ namespace DataAccessLayer.Services
             this._conString = configuration.GetConnectionString("DefaultConnection");
         }
 
-
         public async Task<BookDTO> AddBookAsync(AddBookDTO bookDTO)
         {
             using (SqlConnection con = new SqlConnection(_conString))
@@ -34,8 +31,16 @@ namespace DataAccessLayer.Services
                 cmd.Parameters.AddWithValue("@Description", bookDTO.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Price", bookDTO.Price);
                 cmd.Parameters.AddWithValue("@DiscountedPrice", bookDTO.DiscountedPrice ?? (object)DBNull.Value);
-                //cmd.Parameters.AddWithValue("@ImageUrl", bookDTO.ImageUrl ?? (object)DBNull.Value);
-                byte[] imageBytes = string.IsNullOrEmpty(bookDTO.ImageUrl) ? null : Convert.FromBase64String(bookDTO.ImageUrl);
+
+                byte[] imageBytes = null;
+                if (bookDTO.Image != null && bookDTO.Image.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await bookDTO.Image.CopyToAsync(memoryStream);
+                        imageBytes = memoryStream.ToArray();
+                    }
+                }
                 cmd.Parameters.AddWithValue("@ImageData", imageBytes ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@StockQuantity", bookDTO.StockQuantity);
 
@@ -62,7 +67,7 @@ namespace DataAccessLayer.Services
                         Description = bookDTO.Description,
                         Price = bookDTO.Price,
                         DiscountedPrice = bookDTO.DiscountedPrice,
-                        ImageUrl = bookDTO.ImageUrl,
+                        Image = Convert.ToBase64String(imageBytes),
                         StockQuantity = bookDTO.StockQuantity,
                         DateAdded = DateTime.Now,
                         LastUpdated = DateTime.Now
@@ -72,6 +77,7 @@ namespace DataAccessLayer.Services
                 return null;
             }
         }
+
         public async Task<BookDTO> GetBookByIdAsync(int bookId)
         {
             using (SqlConnection con = new SqlConnection(_conString))
@@ -93,16 +99,16 @@ namespace DataAccessLayer.Services
                         Description = reader["Description"].ToString(),
                         Price = (decimal)reader["Price"],
                         DiscountedPrice = reader["DiscountedPrice"] as decimal?,
-                        ImageUrl = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
-                        StockQuantity = (int)reader["StockQuantity"],
-                        DateAdded = (DateTime)reader["DateAdded"],
-                        LastUpdated = (DateTime)reader["LastUpdated"]
+                        //Image = reader["ImageData"] as byte[],
+                        Image = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
+                        StockQuantity = (int)reader["StockQuantity"]
                     };
                 }
 
                 return null;
             }
         }
+
         public async Task<BookDTO> UpdateBookAsync(int bookId, AddBookDTO bookDTO)
         {
             using (SqlConnection con = new SqlConnection(_conString))
@@ -116,8 +122,16 @@ namespace DataAccessLayer.Services
                 cmd.Parameters.AddWithValue("@Description", bookDTO.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Price", bookDTO.Price);
                 cmd.Parameters.AddWithValue("@DiscountedPrice", bookDTO.DiscountedPrice ?? (object)DBNull.Value);
-                //cmd.Parameters.AddWithValue("@ImageUrl", bookDTO.ImageUrl ?? (object)DBNull.Value);
-                byte[] imageBytes = string.IsNullOrEmpty(bookDTO.ImageUrl) ? null : Convert.FromBase64String(bookDTO.ImageUrl);
+
+                byte[] imageBytes = null;
+                if (bookDTO.Image != null && bookDTO.Image.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await bookDTO.Image.CopyToAsync(memoryStream);
+                        imageBytes = memoryStream.ToArray();
+                    }
+                }
                 cmd.Parameters.AddWithValue("@ImageData", imageBytes ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@StockQuantity", bookDTO.StockQuantity);
 
@@ -170,18 +184,14 @@ namespace DataAccessLayer.Services
                         Description = reader["Description"].ToString(),
                         Price = (decimal)reader["Price"],
                         DiscountedPrice = reader["DiscountedPrice"] as decimal?,
-                        ImageUrl = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
-                        StockQuantity = (int)reader["StockQuantity"],
-                        DateAdded = (DateTime)reader["DateAdded"],
-                        LastUpdated = (DateTime)reader["LastUpdated"]
+                        //Image = reader["ImageData"] as byte[],
+                        Image = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
+                        StockQuantity = (int)reader["StockQuantity"]
                     });
                 }
             }
 
             return books;
         }
-
-
     }
-
 }
