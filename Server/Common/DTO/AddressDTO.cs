@@ -8,6 +8,7 @@ namespace Common.DTO
 {
     public class AddressDTO
     {
+        public int AddressId { get; set; }
         public string FullName { get; set; }
         public string PhoneNumber { get; set; }
         public string TypeOfAddress { get; set; }

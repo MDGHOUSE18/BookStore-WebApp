@@ -41,6 +41,7 @@ namespace DataAccessLayer.Services
                     {
                         return new AddressDTO
                         {
+                            AddressId = reader.GetInt32("AddressID"),
                             FullName = reader.GetString("FullName"),
                             PhoneNumber = reader.GetString("PhoneNumber"),
                             TypeOfAddress = reader.GetString("TypeOfAddress"),
@@ -103,6 +104,7 @@ namespace DataAccessLayer.Services
                     {
                         return new AddressDTO
                         {
+                            AddressId = reader.GetInt32("AddressID"),
                             FullName = reader.GetString("FullName"),
                             PhoneNumber = reader.GetString("PhoneNumber"),
                             TypeOfAddress = reader.GetString("TypeOfAddress"),
@@ -148,6 +150,7 @@ namespace DataAccessLayer.Services
                     {
                         addresses.Add(new AddressDTO
                         {
+                            AddressId = reader.GetInt32("AddressID"),
                             FullName = reader.GetString("FullName"),
                             PhoneNumber = reader.GetString("PhoneNumber"),
                             TypeOfAddress = reader.GetString("TypeOfAddress"),

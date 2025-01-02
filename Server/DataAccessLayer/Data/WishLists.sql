@@ -30,10 +30,11 @@ BEGIN
         b.Title,
         b.Author,
         b.Price,
-        CASE 
-            WHEN b.DiscountedPrice > 0 THEN b.Price - (b.Price * b.DiscountedPrice / 100) 
-            ELSE b.Price 
-        END AS DiscountedPrice,
+		b.DiscountedPrice,
+        --CASE 
+        --    WHEN b.DiscountedPrice > 0 THEN b.Price - (b.Price * b.DiscountedPrice / 100) 
+        --    ELSE b.Price 
+        --END AS DiscountedPrice,
         b.ImageData,
         b.StockQuantity
     FROM 

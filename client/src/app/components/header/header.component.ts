@@ -16,6 +16,7 @@ export class HeaderComponent implements OnInit{
   islogin:boolean =false;
   subsription!:Subscription;
   token:string|null = null;
+  cartItems :any=[]
 
   constructor(
     private dialog: MatDialog,
@@ -27,6 +28,10 @@ export class HeaderComponent implements OnInit{
   ngOnInit(): void {
     this.subsription=this.dataService.UserName.subscribe((result)=>this.userName=result)
     this.subsription=this.dataService.AccessToken.subscribe((result)=>this.token=result)
+    this.subsription = this.dataService.CartItems.subscribe((result) => this.cartItems=result)
+    // console.log(this.cartItems.length);
+    // console.log(this.cartItems);
+    
   }
 
   checkLoginStatus() {

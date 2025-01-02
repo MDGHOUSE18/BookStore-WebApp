@@ -60,6 +60,7 @@ namespace DataAccessLayer.Services
                             Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                             DiscountedPrice = reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
                             //ImageUrl = reader.GetString(reader.GetOrdinal("ImageData")),
+                            ImageUrl = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
                             StockQuantity = reader.GetInt32(reader.GetOrdinal("StockQuantity"))
 
                         });

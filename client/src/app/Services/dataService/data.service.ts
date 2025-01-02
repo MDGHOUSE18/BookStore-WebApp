@@ -14,10 +14,16 @@ export class DataService {
   private userEmail = new BehaviorSubject<string | null>(
     localStorage.getItem('email') ?? null
   );
+  private userPhone = new BehaviorSubject<string | null>(
+    localStorage.getItem('phone') ?? null
+  );
+
+  // private cartQuantity = new BehaviorSubject();
 
   UserName = this.userName.asObservable();
   AccessToken = this.accessToken.asObservable();
   UserEmail = this.userEmail.asObservable();
+  UserPhone = this.userPhone.asObservable();
 
   private wishList = new BehaviorSubject([]);
   WishList = this.wishList.asObservable();
@@ -38,6 +44,9 @@ export class DataService {
 
   setUserEmail(email: string): void {
     this.userEmail.next(email);
+  }
+  setUserPhone(phone: string): void {
+    this.userEmail.next(phone);
   }
 
   clearUserData(): void {

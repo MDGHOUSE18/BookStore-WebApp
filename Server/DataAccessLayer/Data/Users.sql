@@ -15,21 +15,6 @@ CREATE TABLE Users (
     LastLogin DATETIME NULL, -- Nullable last login timestamp
 );
 
-INSERT INTO Users (FullName, Email, PasswordHash, Role, PhoneNumber)
-VALUES 
-('Mahammed Ghouse', 'ghouseakr@gmail.com', 'Mdg@1234', 'Admin', '7989621872'),
-('Rajesh Kumar', 'rajesh.kumar@example.com', 'Rajesh@1234', 'Admin', '7989685202'),
-('Sonia Verma', 'sonia.verma@example.com', 'Sonia@1234', 'User', '9876543210'),
-('Anjali Patel', 'anjali.patel@example.com', 'Anjali@1234', 'User', '9123456789'),
-('Vikram Singh', 'vikram.singh@example.com', 'Vikram@1234', 'User', '7890123456'),
-('Priya Mehta', 'priya.mehta@example.com', 'Priya@1234', 'User', '6543210987'),
-('Ravi Gupta', 'ravi.gupta@example.com', 'Ravi@1234', 'User', '8234567890'),
-('Maya Sharma', 'maya.sharma@example.com', 'Maya@1234', 'User', '7654321098'),
-('Karan Desai', 'karan.desai@example.com', 'Karan@1234', 'User', '6345789012'),
-('Simran Joshi', 'simran.joshi@example.com', 'Simran@1234', 'User', '5463728190'),
-('Amit Chauhan', 'amit.chauhan@example.com', 'Amit@1234', 'User', '4783921650');
-
-
 Select * from Users;
 CREATE OR ALTER PROCEDURE usp_CreateUser
     @FullName NVARCHAR(255),

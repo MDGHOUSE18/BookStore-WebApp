@@ -124,3 +124,14 @@ END;
 
 
 
+CREATE OR ALTER PROCEDURE usp_UpdateBookImage
+    @BookID INT,
+    @ImageData VARBINARY(MAX)
+AS
+BEGIN
+    -- Update the ImageData for the specified BookID
+    UPDATE Books
+    SET ImageData = @ImageData,
+        LastUpdated = GETDATE()
+    WHERE BookID = @BookID;
+END;

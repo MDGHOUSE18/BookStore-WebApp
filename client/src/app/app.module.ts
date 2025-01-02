@@ -17,9 +17,13 @@ import { MatTableModule } from '@angular/material/table';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatBadgeModule} from '@angular/material/badge';
+import {TextFieldModule} from '@angular/cdk/text-field';
+import {MatRadioModule} from '@angular/material/radio';
 
 // Reactive Forms
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 import { LoginSignupComponent } from './components/login-signup/login-signup.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -31,6 +35,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { WishlistComponent } from './components/wishlist/wishlist.component';
 import { CartComponent } from './components/cart/cart.component';
 import { OrdersComponent } from './components/orders/orders.component';
+import { BookCardComponent } from './components/book-card/book-card.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +49,7 @@ import { OrdersComponent } from './components/orders/orders.component';
     WishlistComponent,
     CartComponent,
     OrdersComponent,
+    BookCardComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,7 +66,11 @@ import { OrdersComponent } from './components/orders/orders.component';
     MatPaginatorModule,
     MatMenuModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatBadgeModule,
+    TextFieldModule,
+    MatRadioModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent],

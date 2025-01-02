@@ -1,0 +1,22 @@
+<div class="card">
+  <div class="img">
+    <!-- <img [src]="'../../../assets/books/book1.jpeg'" alt="bookimg" /> -->
+    <img
+          [src]="
+            book.image
+              ? 'data:image/' + book.imageFormat + ';base64,' + book.image
+              : BooksImagePath
+          "
+          alt="{{ book.title || 'Default Title' }}"
+          class="book-image"
+        />
+  </div>
+  <div class="details">
+    <p class="title">{{ book.title }}</p>
+    <p class="author">by {{ book.author }}</p>
+    <p class="price">
+      <b>{{ book.discountedPrice | currency : "INR" }}</b> &nbsp;
+      <s>{{ book.price | currency : "INR" }}</s>
+    </p>
+  </div>
+</div>

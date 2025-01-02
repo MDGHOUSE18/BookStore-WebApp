@@ -23,10 +23,12 @@
           <span>{{ userName || 'Profile' }}</span>
         </button>
       </div>
-      <div class="icon-container">
+      <div class="icon-container" >
         <button style="cursor: pointer" [routerLink]="['cart']">
-          <img src="../../../assets/home/cart.png" alt="cart" />
-          <span>Cart</span>
+          <div matBadge="{{cartItems.length}}" matBadgeOverlap="true">
+            <img src="../../../assets/home/cart.png" alt="Cart" />
+          </div>
+          <span style="display: block;">Cart</span>
         </button>
       </div>
     </div>

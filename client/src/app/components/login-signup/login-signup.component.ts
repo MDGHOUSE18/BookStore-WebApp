@@ -73,13 +73,15 @@ export class LoginSignupComponent implements OnInit {
       this.userService.login(this.loginForm.value).subscribe(
         (response:any) => {
           if (response.success) {
-            const { token, name, role, email } = response.data;
+            const { token, name, phone, email } = response.data;
             localStorage.setItem('token', token);
             localStorage.setItem('email', email);
             localStorage.setItem('name', name);
+            localStorage.setItem('phone', phone);
             this.dataService.setUsername(name)
             this.dataService.setAccessToken(token)
             this.dataService.setUserEmail(email)
+            this.dataService.setUserPhone(phone)
             console.log('User data saved in local storage');
             this.dialogRef.close();
           } else {

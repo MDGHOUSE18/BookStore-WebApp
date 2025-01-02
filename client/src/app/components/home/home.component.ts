@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { BooksService } from 'src/app/Services/booksService/books.service';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
+import { CartService } from 'src/app/Services/cartService/cart.service';
+import { DataService } from 'src/app/Services/dataService/data.service';
 
 @Component({
   selector: 'app-home',
@@ -14,16 +16,22 @@ export class HomeComponent implements OnInit {
   pageSize = 12; // Number of books per page
   pageIndex = 0; // Current page index
   totalBooks = 0; // Total number of books
+  cartListItem:any=[]
+  
 
   constructor(
     private booksService: BooksService,
-    private router: Router
+    private router: Router,
+    private cartService : CartService,
+    private dataService:DataService
   ) {}
 
   ngOnInit(): void {
-    this.getBooks(); // Fetch books on component initialization
+    this.getBooks(); 
+    this.getCartItems()
   }
 
+ 
   getBooks() {
     this.booksService.getAllBooks()?.subscribe(
       (response: any) => {
@@ -36,6 +44,20 @@ export class HomeComponent implements OnInit {
         console.log('Error while fetching books');
       }
     );
+  }
+  getCartItems(){
+    this.cartService.getCarts().subscribe((response) => {
+      // this.cartListItem = response.data;
+      // // const id = this.route.snapshot.paramMap.get('id');
+      // if (id) {
+      //   const listItem = this.cartListItem.find(
+      //     (item: any) => item.bookId == id
+      //   );
+        this.dataService.setCartData(response.data)
+        console.log('Cart List Item:', response.data);
+        // console.log('Is Cart Listed:', this.isCartlisted);
+      // }
+    });
   }
 
   updateDisplayedBooks() {

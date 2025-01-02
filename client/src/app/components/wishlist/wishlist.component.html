@@ -23,7 +23,18 @@
           <div class="item" *ngFor="let item of wishListItems">
             <div class="right">
               <div class="img">
-                <img src="../../../assets/books/1.png" alt="{{ item.title }}" />
+                <img
+                  [src]="
+                  item.imageUrl
+                      ? 'data:image/' +
+                      item.imageFormat +
+                        ';base64,' +
+                        item.imageUrl
+                      : '../../../assets/books/book.png'
+                  "
+                  alt="{{ item.title || 'Default Title' }}"
+                  class="book-image"
+                />
               </div>
               <div class="details">
                 <p class="title">{{ item.title }}</p>

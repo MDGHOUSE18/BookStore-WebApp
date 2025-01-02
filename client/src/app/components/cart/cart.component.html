@@ -3,44 +3,66 @@
     <h1>PLEASE LOG IN</h1>
     <p>Login to view items in your cart.</p>
     <img src="../../../assets/header/Page-1@2x.png" alt="" />
-    <button mat-stroked-button class="login-btn" (click)="openDialog()">
-      Login/SignUp
-    </button>
+    <button mat-stroked-button class="login-btn" (click)="openDialog()">Login/SignUp</button>
   </div>
 </div>
+
 <ng-template #Cart>
   <div class="outer">
     <div class="cart">
+      <!-- Cart Header -->
       <p class="top">
         <button>Home/</button>
         <span>My Cart</span>
       </p>
+
+      <!-- Cart Content -->
       <div class="cart-content">
         <div class="heading">
           <p>My Cart</p>
         </div>
+
+        <!-- Cart Items -->
         <div class="cartItems">
           <div class="item" *ngFor="let item of cartItems">
             <div class="right">
               <div class="img">
-                <img src="../../../assets/books/1.png" alt="{{ item.title }}" />
+                <img
+                  [src]="
+                    item.imageUrl
+                      ? 'data:image/' + item.imageFormat + ';base64,' + item.imageUrl
+                      : '../../../assets/books/book.png'
+                  "
+                  alt="{{ item.title || 'Default Title' }}"
+                  class="book-image"
+                />
               </div>
               <div class="details">
                 <p class="title">{{ item.title }}</p>
                 <p class="author">by {{ item.author }}</p>
                 <p>
                   <span class="discountedPrice">{{
-                    item.discountedPrice*item.cartQuantity | currency:'INR'
+                    item.discountedPrice * item.cartQuantity | currency : 'INR'
                   }}</span>
                   &nbsp;
-                  <span class="price">{{ item.price*item.cartQuantity | currency:'INR' }}</span>
+                  <span class="price">{{
+                    item.price * item.cartQuantity | currency : 'INR'
+                  }}</span>
                 </p>
                 <div class="quantity-control">
-                  <button mat-icon-button (click)="decreaseQuantity(item)" [disabled]="item.cartQuantity <= 1">
+                  <button
+                    mat-icon-button
+                    (click)="decreaseQuantity(item)"
+                    [disabled]="item.cartQuantity <= 1"
+                  >
                     -
                   </button>
                   <span>{{ item.cartQuantity }}</span>
-                  <button mat-icon-button (click)="increaseQuantity(item)" [disabled]="item.cartQuantity >= 10">
+                  <button
+                    mat-icon-button
+                    (click)="increaseQuantity(item)"
+                    [disabled]="item.cartQuantity >= 10"
+                  >
                     +
                   </button>
                 </div>
@@ -53,7 +75,206 @@
             </div>
           </div>
         </div>
+
+        <!-- Place Order Button -->
+        <div class="placeorder">
+          <button
+            mat-flat-button
+            color="primary"
+            class="placeOrder-btn"
+            (click)="onPlaceOrder()"
+            *ngIf="!isPlacedOrder"
+            style="text-transform: uppercase;"
+          >
+            <span>Place order</span>
+          </button>
+        </div>
       </div>
+
+      <!-- Address Details Section -->
+      <div class="cart-content" *ngIf="isPlacedOrder; else AddressDetails">
+        <div class="heading h-color address-heading">
+          <p>Address Details</p>
+          <button
+            mat-stroked-button
+            color="warn"
+            (click)="onOpenAddAddress()"
+            *ngIf="!isAddressSelected"
+          >
+            Add New Address
+          </button>
+        </div>
+
+        <!-- Address Form -->
+        <div class="address-form">
+          <div class="common-details">
+            <div class="detail name">
+              <label for="fullName">Full Name</label>
+              <input
+                matInput
+                placeholder="Full name"
+                [(ngModel)]="newAddress.fullName"
+                [disabled]="selectedAddress"
+              />
+            </div>
+            <div class="detail phone">
+              <label for="phone">Mobile number</label>
+              <input
+                matInput
+                placeholder="Mobile number"
+                [(ngModel)]="newAddress.phone"
+                [disabled]="selectedAddress"
+              />
+            </div>
+          </div>
+
+          <div class="add-address" *ngIf="addAddress">
+            <mat-radio-group [(ngModel)]="newAddress.addressType" [disabled]="selectedAddress">
+              <mat-radio-button value="Home">Home</mat-radio-button>
+              <mat-radio-button value="Work">Work</mat-radio-button>
+              <mat-radio-button value="Other">Other</mat-radio-button>
+            </mat-radio-group>
+
+            <div class="address">
+              <label for="address">Address</label>
+              <textarea
+                matInput
+                cdkTextareaAutosize
+                cdkAutosizeMinRows="1"
+                cdkAutosizeMaxRows="4"
+                placeholder="Address"
+                [(ngModel)]="newAddress.address"
+                [disabled]="selectedAddress"
+              ></textarea>
+            </div>
+
+            <div class="common-details city-state">
+              <div class="detail">
+                <label for="city">City</label>
+                <input
+                  matInput
+                  placeholder="City"
+                  [(ngModel)]="newAddress.city"
+                  [disabled]="selectedAddress"
+                />
+              </div>
+              <div class="detail">
+                <label for="state">State</label>
+                <input
+                  matInput
+                  placeholder="State"
+                  [(ngModel)]="newAddress.state"
+                  [disabled]="selectedAddress"
+                />
+              </div>
+            </div>
+
+            <!-- Add/Update Address Button -->
+            <div class="add-address-btn" *ngIf="!isAddressSelected">
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="addNewAddress(newAddress)"
+                *ngIf="btn"
+              >
+                Add
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                (click)="updateAddress(newAddress)"
+                *ngIf="!btn"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+
+          <!-- Show Existing Addresses -->
+          <div class="show-addresses" *ngIf="!isAddressSelected">
+            <div *ngFor="let address of addresses; let i = index">
+              <div class="address-item">
+                <mat-radio-group [(ngModel)]="selectedAddress">
+                  <mat-radio-button [value]="address">
+                    <p><strong>{{ i + 1 }}.{{ address.typeOfAddress }} :</strong>
+                      <button color="accent" (click)="onOpenUpdateAddress(address)">Update</button>
+                    </p>
+                    <p>Address</p>
+                    <p>{{ address.address }}</p>
+                    <p>{{ address.city }}, {{ address.state }}</p>
+                  </mat-radio-button>
+                </mat-radio-group>
+              </div>
+            </div>
+
+            <!-- Continue Button -->
+            <div class="add-address-btn">
+              <button
+                mat-flat-button
+                color="primary"
+                class="placeOrder-btn btn"
+                style="text-transform: uppercase;"
+                (click)="onContinue()"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Section -->
+      <div class="cart-content">
+        <div class="heading h-color">
+          <p>Order summary</p>
+        </div>
+        <div class="cartItems" *ngIf="isAddressSelected">
+          <div class="item" *ngFor="let item of cartItems">
+            <div class="right">
+              <div class="img">
+                <img
+                  [src]="
+                    item.imageUrl
+                      ? 'data:image/' + item.imageFormat + ';base64,' + item.imageUrl
+                      : '../../../assets/books/book.png'
+                  "
+                  alt="{{ item.title || 'Default Title' }}"
+                  class="book-image"
+                />
+              </div>
+              <div class="details">
+                <p class="title">{{ item.title }}</p>
+                <p class="author">by {{ item.author }}</p>
+                <p>
+                  <span class="discountedPrice">{{
+                    item.discountedPrice * item.cartQuantity | currency : 'INR'
+                  }}</span>
+                  &nbsp;
+                  <span class="price">{{
+                    item.price * item.cartQuantity | currency : 'INR'
+                  }}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checkout Button -->
+        <div class="placeorder" *ngIf="isAddressSelected">
+          <button mat-flat-button color="primary" class="placeOrder-btn btn">
+            <span>Checkout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Address Details Template -->
+<ng-template #AddressDetails>
+  <div class="cart-content">
+    <div class="heading h-color address-heading">
+      <p>Address Details</p>
     </div>
   </div>
 </ng-template>

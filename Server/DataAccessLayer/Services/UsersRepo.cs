@@ -83,7 +83,7 @@ namespace DataAccessLayer.Repositories
         public async Task<LoginResDTO> Login(LoginDTO user)
         {
             user.Password = EncodePasswordToBase64(user.Password);
-            Console.WriteLine(user.Password);
+            //Console.WriteLine(user.Password);
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -111,7 +111,8 @@ namespace DataAccessLayer.Repositories
                     {
                         Token = token,
                         name = reader["FullName"].ToString(),
-                        email = reader["Email"].ToString()
+                        email = reader["Email"].ToString(),
+                        phone = reader["PhoneNumber"].ToString()
                     };
                 }
 

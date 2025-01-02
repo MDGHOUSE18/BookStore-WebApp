@@ -86,15 +86,17 @@
 .icon-container button {
   background: none;
   border: none;
-  text-align: -webkit-center;
+  text-align: center;
+  position: relative;
 }
 .icon-container img {
   width: 25px;
   display: block;
+  margin: 0 auto;
 }
 
 .icon-container span {
-  font: normal normal normal 10px/13px Roboto;
+  font: normal 400 12px/1.5 Roboto, sans-serif;
   letter-spacing: 0.45px;
   color: #ffffff;
   opacity: 1;

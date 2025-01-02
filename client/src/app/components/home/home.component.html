@@ -9,19 +9,20 @@
         *ngFor="let book of displayedBooks"
         [routerLink]="['/book', book.bookID]"
       >
+      <app-book-card [book]="book"></app-book-card>
         <!-- [routerLink]="'/book'"> -->
-        <div class="img">
-          <!-- <img
+        <!-- <div class="img">
+          <img
             [src]="
-              book.image ? book.image : '../../../assets/books/1.png'
+            BooksImagePath
             "
             alt="bookimg"
-          /> -->
+          />
           <img
             [src]="
               book.image
                 ? 'data:image/' + book.imageFormat + ';base64,' + book.image
-                : '../../../assets/books/1.png'
+                : 'BooksImagePath'
             "
             alt="{{ book.title || 'Default Title' }}"
             class="book-image"
@@ -34,7 +35,7 @@
             <b>{{ book.discountedPrice| currency:'INR' }}</b> &nbsp; <s>{{ book.price| currency:'INR' }}</s>
           </p>
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- <mat-paginator
   [length]="totalBooks"
@@ -42,11 +43,11 @@
   [pageSizeOptions]="[12, 24, 36]"
   (page)="onPageChange($event)">
 </mat-paginator> -->
-    <mat-paginator
-      [length]="totalBooks"
-      [pageSize]="pageSize"
-      (page)="onPageChange($event)"
-    >
-    </mat-paginator>
-  </div>
+</div>
+<mat-paginator
+  [length]="totalBooks"
+  [pageSize]="pageSize"
+  (page)="onPageChange($event)"
+>
+</mat-paginator>
 </div>

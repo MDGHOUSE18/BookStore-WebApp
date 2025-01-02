@@ -35,7 +35,7 @@ BEGIN
     VALUES (@UserID, @TypeID, @Address, @City, @State);
 
     -- Return the inserted row
-    SELECT TOP 1 u.FullName,u.PhoneNumber, TypeOfAddress, Address, City, State
+    SELECT TOP 1 u.FullName,u.PhoneNumber,AddressID, TypeOfAddress, Address, City, State
     FROM AddressTable a
 	Inner Join AddressTypeTable at ON a.TypeID=at.ID
 	Inner Join Users u ON u.UserId=a.UserID
@@ -48,7 +48,7 @@ CREATE OR ALTER PROCEDURE usp_GetAddressById
     @AddressID INT
 AS
 BEGIN
-    SELECT u.FullName,u.PhoneNumber, TypeOfAddress, Address, City, State
+    SELECT u.FullName,u.PhoneNumber,AddressID, TypeOfAddress, Address, City, State
     FROM AddressTable a
 	Inner Join AddressTypeTable at ON a.TypeID=at.ID
 	Inner Join Users u ON u.UserId=a.UserID
@@ -72,7 +72,7 @@ BEGIN
         State = @State
     WHERE AddressID = @AddressID;
 
-	SELECT u.FullName,u.PhoneNumber, TypeOfAddress, Address, City, State
+	SELECT u.FullName,u.PhoneNumber,AddressID, TypeOfAddress, Address, City, State
     FROM AddressTable a
 	Inner Join AddressTypeTable at ON a.TypeID=at.ID
 	Inner Join Users u ON u.UserId=a.UserID
@@ -91,7 +91,7 @@ CREATE OR ALTER PROCEDURE usp_GetAddressesByUserId
     @UserID INT
 AS
 BEGIN
-    SELECT u.FullName,u.PhoneNumber, TypeOfAddress, Address, City, State
+    SELECT u.FullName,u.PhoneNumber,AddressID, TypeOfAddress, Address, City, State
     FROM AddressTable a
 	Inner Join AddressTypeTable at ON a.TypeID=at.ID
 	Inner Join Users u ON u.UserId=a.UserID
