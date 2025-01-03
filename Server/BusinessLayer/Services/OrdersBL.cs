@@ -19,14 +19,10 @@ namespace BusinessLayer.Services
         {
              this._ordersRepo = ordersRepo;
         }
+
         public Task<OrderDTO> AddOrderAsync(int userId, int addressId)
         {
             return _ordersRepo.AddOrderAsync(userId, addressId);
-        }
-
-        public Task<OrderDTO> UpdateOrderAsync(int orderId, int statusId)
-        {
-            return _ordersRepo.UpdateOrderStatusAsync(orderId,statusId);   
         }
 
         public Task<OrderDTO> GetOrderAsync(int orderId)
@@ -34,9 +30,19 @@ namespace BusinessLayer.Services
             return _ordersRepo.GetOrderAsync(orderId);
         }
 
+        public Task<OrderDetailDTO> GetOrderDetailsAsync(int orderId)
+        {
+            return _ordersRepo.GetOrderDetailsAsync(orderId);
+        }
+
         public Task<List<OrderDTO>> GetOrdersAsync(int userId)
         {
             return _ordersRepo.GetOrdersAsync(userId);
+        }
+
+        public Task<OrderDTO> UpdateOrderStatusAsync(int orderId, int statusId)
+        {
+            return _ordersRepo.UpdateOrderStatusAsync(orderId, statusId);
         }
     }
 }

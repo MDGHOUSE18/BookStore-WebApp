@@ -5,7 +5,8 @@ import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/Services/dataService/data.service';
 import { CartService } from 'src/app/Services/cartService/cart.service';
 import { AddressService } from 'src/app/Services/addressService/address.service';
-import { state } from '@angular/animations';
+import { OrdersService } from 'src/app/Services/orderService/orders.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -18,12 +19,10 @@ export class CartComponent {
   cartItems: any = [];
   addAddress: boolean = false;
   btn: boolean = true;
-  // quantity:any=0
-  // Example data for addresses
   addresses: any = [];
   selectedAddress: any;
-  isPlacedOrder:boolean=false;
-  isAddressSelected:boolean=false;
+  isPlacedOrder: boolean = false;
+  isAddressSelected: boolean = false;
   newAddress: any = {
     addressId: '',
     fullName: '',
@@ -44,7 +43,9 @@ export class CartComponent {
     private dialog: MatDialog,
     private dataService: DataService,
     private cartService: CartService,
-    private addressService: AddressService
+    private addressService: AddressService,
+    private orderService: OrdersService,
+    private router:Router
   ) {}
 
   ngOnInit(): void {
@@ -61,16 +62,17 @@ export class CartComponent {
     this.getAddresses();
   }
 
-  openDialog() {
+  openDialog(): void {
     const dialogRef = this.dialog.open(LoginSignupComponent, {});
     dialogRef.afterClosed();
   }
-  getCartItems() {
+
+  getCartItems(): void {
     this.cartService.getCarts().subscribe(
       (response) => {
-        // console.log(response);
-        this.cartItems = response.data;
-        // this.dataService.setWishListData(this.wishListItems)
+        if (response.data) {
+          this.cartItems = response.data;
+        }
         this.dataService.setCartData(response.data);
       },
       (error) => {
@@ -79,7 +81,7 @@ export class CartComponent {
     );
   }
 
-  deleteCartItem(bookId: any) {
+  deleteCartItem(bookId: any): void {
     this.cartService.deleteCart(bookId).subscribe((response) => {
       this.cartItems = this.cartItems.filter(
         (item: any) => item.bookId !== bookId
@@ -88,31 +90,27 @@ export class CartComponent {
     });
   }
 
-  // Increment item quantity
-  increaseQuantity(item: any) {
+  increaseQuantity(item: any): void {
     if (item.cartQuantity < item.stockQuantity && item.cartQuantity < 10) {
       item.cartQuantity++;
       this.updateCartItem(item.bookId, +1);
     }
   }
 
-  // Decrement item quantity
-  decreaseQuantity(item: any) {
+  decreaseQuantity(item: any): void {
     if (item.cartQuantity > 1) {
       item.cartQuantity--;
       this.updateCartItem(item.bookId, -1);
     }
   }
 
-  // Update the cart item in the backend
-  updateCartItem(id: any, num: number) {
+  updateCartItem(id: any, num: number): void {
     let reqData = {
       bookId: id,
       newQuantity: num,
     };
     this.cartService.updateCart(reqData).subscribe(
       (response) => {
-        // console.log('Cart updated successfully');
         console.log(response.message);
       },
       (error) => {
@@ -121,14 +119,11 @@ export class CartComponent {
     );
   }
 
-  onPlaceOrder(){
-    this.isPlacedOrder =!this.isPlacedOrder
+  onPlaceOrder(): void {
+    this.isPlacedOrder = !this.isPlacedOrder;
   }
 
-  //Address
-
-  // Fetch all addresses from the backend
-  getAddresses() {
+  getAddresses(): void {
     this.addressService.getAddresses().subscribe(
       (response: any) => {
         this.addresses = response.data;
@@ -139,23 +134,19 @@ export class CartComponent {
     );
   }
 
-  // Open/Close the address form
-  onOpenAddAddress() {
+  onOpenAddAddress(): void {
     this.addAddress = !this.addAddress;
   }
 
-  // Add a new address
-  addNewAddress(formData: any) {
+  addNewAddress(formData: any): void {
     let reqData = {
       typeId: formData.addressType,
       address: formData.address,
       city: formData.city,
       state: formData.state,
     };
-    // console.log(reqData)
     this.addressService.createAddress(reqData).subscribe(
       (response) => {
-        // Address added successfully, refetch addresses
         this.getAddresses();
         this.addAddress = false;
         console.log(response);
@@ -166,7 +157,7 @@ export class CartComponent {
     );
   }
 
-  onOpenUpdateAddress(address: any) {
+  onOpenUpdateAddress(address: any): void {
     this.addAddress = !this.addAddress;
     this.btn = !this.btn;
     this.newAddress.addressType = address.typeOfAddress;
@@ -174,14 +165,11 @@ export class CartComponent {
     this.newAddress.city = address.city;
     this.newAddress.state = address.state;
     this.newAddress.addressId = address.addressId;
-
-    // console.log('Address: ' + address.addressId);
-    // console.log('new Address : ', this.newAddress);
   }
-  // Update an existing address
-  updateAddress(formData: any) {
+
+  updateAddress(formData: any): void {
     const addressId = formData.addressId;
-    const addressType = this.typeToNumber[formData.addressType]
+    const addressType = this.typeToNumber[formData.addressType];
     let reqData = {
       addressId: formData.addressId,
       typeId: addressType,
@@ -192,14 +180,12 @@ export class CartComponent {
     console.log(reqData);
     this.addressService.updateAddress(reqData).subscribe(
       (response) => {
-        // Address updated successfully
         this.getAddresses();
       },
       (error) => {
         console.error('Error updating address', error);
       }
     );
-
     this.addAddress = !this.addAddress;
     this.btn = !this.btn;
     this.newAddress.addressType = '';
@@ -207,29 +193,37 @@ export class CartComponent {
     this.newAddress.city = '';
     this.newAddress.state = '';
     this.newAddress.addressId = '';
-    // console.log(this.newAddress);
   }
 
   onContinue() {
     if (this.selectedAddress) {
-      this.isAddressSelected=true;
-      this.onOpenUpdateAddress(this.selectedAddress)
+      this.isAddressSelected = true;
+      this.onOpenUpdateAddress(this.selectedAddress);
       console.log('Selected Address:', this.selectedAddress);
     } else {
       console.log('No address selected');
     }
   }
 
-  // Remove an address
-  // removeAddress(addressId: string) {
-  //   this.addressService.deleteAddress(addressId).subscribe(
-  //     (response) => {
-  //       // Address deleted successfully, refetch addresses
-  //       this.getAddresses();
-  //     },
-  //     (error) => {
-  //       console.error('Error removing address', error);
-  //     }
-  //   );
-  // }
+  placeOrder(): void {
+    if (this.selectedAddress) {
+      this.orderService.createOrder(this.selectedAddress.addressId).subscribe(
+        (response: any) => {
+          console.log(response.message);
+          // this.cartItems = [];
+          // this.addAddress = false;
+          // this.btn = true;
+          // this.addresses = [];
+          // this.isPlacedOrder = false;
+          // this.isAddressSelected = false;
+          this.router.navigate(["/success"])
+        },
+        (error: any) => {
+          console.error('Unable to create order', error);
+        }
+      );
+    } else {
+      console.log('No address selected');
+    }
+  }
 }

@@ -203,7 +203,8 @@ BEGIN
         o.OrderId, 
         b.Title AS BookTitle, 
         b.Author, 
-		b.ImageData,
+        b.ImageData, 
+        b.Description, -- Add other book details as needed
         od.Quantity, 
         (b.Price * od.Quantity) AS TotalPrice, 
         (COALESCE(b.DiscountedPrice, b.Price) * od.Quantity) AS DiscountedPrice, 

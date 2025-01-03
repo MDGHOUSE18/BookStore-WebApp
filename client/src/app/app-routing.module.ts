@@ -7,6 +7,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { WishlistComponent } from './components/wishlist/wishlist.component';
 import { CartComponent } from './components/cart/cart.component';
 import { OrdersComponent } from './components/orders/orders.component';
+import { OrderSuccessComponent } from './components/order-success/order-success.component';
 
 const routes: Routes = [
   {path:'',redirectTo:'/home',pathMatch:'full'},
@@ -18,7 +19,8 @@ const routes: Routes = [
       { path: 'book/:id', component: BookComponent },
       {path:'wishlist',component:WishlistComponent},
       {path:'cart',component:CartComponent},
-      {path:'orders',component:OrdersComponent}
+      {path:'orders',component:OrdersComponent},
+      {path:'success',component:OrderSuccessComponent}
     ],
   },
   { path: 'login', component: LoginSignupComponent },

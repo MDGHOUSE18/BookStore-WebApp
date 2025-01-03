@@ -13,16 +13,15 @@ import { CartService } from 'src/app/Services/cartService/cart.service';
   styleUrls: ['./book.component.scss'],
 })
 export class BookComponent implements OnInit {
-  book: any;
+  book: any = {}; // Default object to avoid undefined errors
   bookId: number = 0;
   bookQuantity: number = 0;
   isWishlisted: boolean = false;
   wishListItem: any[] = [];
   isCartlisted: boolean = false;
-  cartListItem: any[] = [];
-  subscription!: Subscription;
-  token:string|null = null;
-  cartItems:any=[]
+  cartItems: any[] = [];
+  subscription: Subscription = new Subscription();
+  token: string | null = null;
 
   constructor(
     private bookService: BooksService,
@@ -34,133 +33,137 @@ export class BookComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.subscription=this.dataService.AccessToken.subscribe((result)=>this.token=result)
-    this.subscription=this.dataService.CartItems.subscribe((result)=>this.cartItems=result)
-    // console.log(this.cartItems)
-    this.isCartListedOrNot()
-    this.wishlistService.getAllWishlist().subscribe((response) => {
-      this.wishListItem = response.data;
-      const id = this.route.snapshot.paramMap.get('id');
-      if (id) {
-        const listItem = this.wishListItem.find(
-          (item: any) => item.bookId == id
-        );
+    this.initializeData();
+    this.loadBookDetails();
+    this.loadCartAndWishlist();
+  }
 
-        this.isWishlisted = !!listItem;
-      }
-    });
-    
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    this.subscription.unsubscribe();
+  }
 
+  initializeData(): void {
+    this.subscription.add(
+      this.dataService.AccessToken.subscribe((result) => (this.token = result))
+    );
+    this.subscription.add(
+      this.dataService.CartItems.subscribe((result) => (this.cartItems = result || []))
+    );
+  }
+
+  loadBookDetails(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.bookId = +id;
       this.getBook();
+    } else {
+      console.error('Book ID not found in route.');
     }
   }
 
-  isCartListedOrNot(){
-    const id = this.route.snapshot.paramMap.get('id');
-      if (id) {
-        const listItem = this.cartItems.find(
-          (item: any) => item.bookId == id
-        );
-        this.bookQuantity = listItem.cartQuantity
-        this.isCartlisted = !!listItem;
-      }
+  loadCartAndWishlist(): void {
+    if (this.token) {
+      this.isCartListedOrNot();
+      this.wishlistService.getAllWishlist().subscribe(
+        (response) => {
+          this.wishListItem = response?.data || [];
+          const listItem = this.wishListItem.find((item: any) => item.bookId == this.bookId);
+          this.isWishlisted = !!listItem;
+        },
+        (error) => console.error('Error fetching wishlist:', error)
+      );
+    } else {
+      console.warn('Token not available, skipping cart and wishlist load.');
+    }
   }
-  
-  getBook() {
+
+  getBook(): void {
     this.bookService.getBook(this.bookId).subscribe(
       (response: any) => {
-        this.book = response.data;
-        // console.log(response);
+        this.book = response?.data || {};
+        if (!this.book.title) {
+          console.warn('Book data is empty or undefined.');
+        }
       },
       (error) => {
         console.error('Error fetching book:', error);
       }
     );
   }
-  addToCart() {
-    let reqData = {
+
+  isCartListedOrNot(): void {
+    const listItem = this.cartItems.find((item: any) => item.bookId == this.bookId);
+    if (listItem) {
+      this.bookQuantity = listItem.cartQuantity || 0;
+      this.isCartlisted = true;
+    }
+  }
+
+  addToCart(): void {
+    const reqData = {
       bookId: this.bookId,
       quantity: 1,
     };
-    // console.log(reqData);
-
-    this.cartService.createCart(reqData).subscribe((response: any) => {
-      // console.log(response.message);
-      this.snackBar.open('Book added to cart successfully', 'Close', {
-        duration: 2000,
-      });
-      
-      this.dataService.addToCart(this.book)
-      this.bookQuantity = 1;
-      this.isCartlisted = true;
-      // this.dataService.setCartData=
-    });
+    this.cartService.createCart(reqData).subscribe(
+      () => {
+        this.snackBar.open('Book added to cart successfully', 'Close', { duration: 2000 });
+        this.dataService.addToCart(this.book);
+        this.bookQuantity = 1;
+        this.isCartlisted = true;
+      },
+      (error) => console.error('Error adding to cart:', error)
+    );
   }
-  
-  increaseQuantity() {
+
+  increaseQuantity(): void {
     if (this.bookQuantity < this.book.stockQuantity && this.bookQuantity < 10) {
       this.bookQuantity++;
-      this.updateCartItem(this.bookId, +1);
-      this.dataService.updateCartItemQuantity(this.bookId,this.bookQuantity)
-    }else{
-      this.snackBar.open("you reached maximum quantity for cart", 'Close', {
-        duration: 2000,
-      });
+      this.updateCartItem(1);
+      this.dataService.updateCartItemQuantity(this.bookId, this.bookQuantity);
+    } else {
+      this.snackBar.open('You reached the maximum quantity for cart', 'Close', { duration: 2000 });
     }
   }
 
-  decreaseQuantity() {
+  decreaseQuantity(): void {
     if (this.bookQuantity > 1) {
       this.bookQuantity--;
-      this.updateCartItem(this.bookId, -1);
-      this.dataService.updateCartItemQuantity(this.bookId,this.bookQuantity)
-    }else{
-      this.deleteCartItem()
+      this.updateCartItem(-1);
+      this.dataService.updateCartItemQuantity(this.bookId, this.bookQuantity);
+    } else {
+      this.deleteCartItem();
     }
   }
 
-  updateCartItem(id: any, num: number) {
-    // console.log('bookId ' + id + '  num : ' + num);
-
-    let reqData = {
-      bookId: id,
-      newQuantity: num,
+  updateCartItem(change: number): void {
+    const reqData = {
+      bookId: this.bookId,
+      newQuantity: change,
     };
     this.cartService.updateCart(reqData).subscribe(
-      (response) => {
-        console.log('Cart updated successfully');
-        // console.log(response.message);
-      },
-      (error) => {
-        console.log('Error updating cart');
-      }
+      () => console.log('Cart updated successfully'),
+      (error) => console.error('Error updating cart:', error)
     );
   }
-  addToWishlist() {
+
+  addToWishlist(): void {
     this.wishlistService.addBookToWishlist(this.bookId.toString()).subscribe(
-      (response) => {
-        this.snackBar.open(
-          this.book.title + 'Book added to wishlist',
-          'Close',
-          { duration: 4000 }
-        );
-        // console.log('Book added to wishlist:', response);
+      () => {
+        this.snackBar.open(`${this.book.title} added to wishlist`, 'Close', { duration: 4000 });
         this.isWishlisted = true;
       },
-      (error) => {
-        console.error('Error adding book to wishlist:', error);
-      }
+      (error) => console.error('Error adding book to wishlist:', error)
     );
   }
-  deleteCartItem(){
-    this.cartService.deleteCart(this.bookId.toString()).subscribe((response:any) => {
-      this.isCartlisted = !this.isCartlisted;
-      this.snackBar.open(response.message, 'Close', {
-        duration: 2000,
-      });
-    })
+
+  deleteCartItem(): void {
+    this.cartService.deleteCart(this.bookId.toString()).subscribe(
+      (response: any) => {
+        this.isCartlisted = false;
+        this.snackBar.open(response.message, 'Close', { duration: 2000 });
+      },
+      (error) => console.error('Error deleting cart item:', error)
+    );
   }
 }

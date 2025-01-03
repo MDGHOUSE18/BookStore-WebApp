@@ -4,6 +4,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { CartService } from 'src/app/Services/cartService/cart.service';
 import { DataService } from 'src/app/Services/dataService/data.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -11,68 +12,78 @@ import { DataService } from 'src/app/Services/dataService/data.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  Books: any; // Array of all books
-  displayedBooks: any[] = []; // Books to display on the current page
-  pageSize = 12; // Number of books per page
-  pageIndex = 0; // Current page index
-  totalBooks = 0; // Total number of books
-  cartListItem:any=[]
-  
+  Books: any[] = [];
+  displayedBooks: any[] = [];
+  pageSize: number = 12;
+  pageIndex: number = 0;
+  totalBooks: number = 0;
+  cartListItem: any[] = [];
+  subscription: Subscription = new Subscription();
+  token: string | null = null;
 
   constructor(
     private booksService: BooksService,
     private router: Router,
-    private cartService : CartService,
-    private dataService:DataService
+    private cartService: CartService,
+    private dataService: DataService
   ) {}
 
   ngOnInit(): void {
-    this.getBooks(); 
-    this.getCartItems()
+    this.initializeSubscriptions();
+    this.getBooks();
+    this.getCartItems();
   }
 
- 
-  getBooks() {
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  initializeSubscriptions(): void {
+    this.subscription.add(
+      this.dataService.AccessToken.subscribe((result) => (this.token = result))
+    );
+  }
+
+  getBooks(): void {
     this.booksService.getAllBooks()?.subscribe(
       (response: any) => {
-        // console.log(response);
-        this.Books = response.data; // Assign fetched books
-        this.totalBooks = this.Books.length; // Set total number of books
-        this.updateDisplayedBooks(); // Display books for the first page
+        this.Books = response?.data || [];
+        this.totalBooks = this.Books.length;
+        this.updateDisplayedBooks();
       },
       (error) => {
-        console.log('Error while fetching books');
+        console.error('Error while fetching books:', error);
       }
     );
   }
-  getCartItems(){
-    this.cartService.getCarts().subscribe((response) => {
-      // this.cartListItem = response.data;
-      // // const id = this.route.snapshot.paramMap.get('id');
-      // if (id) {
-      //   const listItem = this.cartListItem.find(
-      //     (item: any) => item.bookId == id
-      //   );
-        this.dataService.setCartData(response.data)
-        console.log('Cart List Item:', response.data);
-        // console.log('Is Cart Listed:', this.isCartlisted);
-      // }
-    });
+
+  getCartItems(): void {
+    if (this.token) {
+      this.cartService.getCarts().subscribe(
+        (response: any) => {
+          // console.log('Cart List Items:', response?.data);
+          this.dataService.setCartData(response?.data || []);
+        },
+        (error) => {
+          console.error('Error while fetching cart items:', error);
+        }
+      );
+    }
   }
 
-  updateDisplayedBooks() {
+  updateDisplayedBooks(): void {
     const startIndex = this.pageIndex * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.displayedBooks = this.Books.slice(startIndex, endIndex);
   }
 
-  onPageChange(event: PageEvent) {
+  onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.updateDisplayedBooks(); // Update displayed books for the new page
+    this.updateDisplayedBooks();
   }
 
-  // navigateToBook(book: any) {
-  //   this.router.navigate(['/book'], { state: { book } });
-  // }
+  navigateToBook(book: any): void {
+    this.router.navigate(['/book'], { state: { book } });
+  }
 }

@@ -36,6 +36,7 @@ import { WishlistComponent } from './components/wishlist/wishlist.component';
 import { CartComponent } from './components/cart/cart.component';
 import { OrdersComponent } from './components/orders/orders.component';
 import { BookCardComponent } from './components/book-card/book-card.component';
+import { OrderSuccessComponent } from './components/order-success/order-success.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { BookCardComponent } from './components/book-card/book-card.component';
     CartComponent,
     OrdersComponent,
     BookCardComponent,
+    OrderSuccessComponent,
   ],
   imports: [
     BrowserModule,

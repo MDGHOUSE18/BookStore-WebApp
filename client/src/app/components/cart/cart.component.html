@@ -31,7 +31,7 @@
                   [src]="
                     item.imageUrl
                       ? 'data:image/' + item.imageFormat + ';base64,' + item.imageUrl
-                      : '../../../assets/books/book.png'
+                      : '../../../assets/books/book.jpeg'
                   "
                   alt="{{ item.title || 'Default Title' }}"
                   class="book-image"
@@ -83,7 +83,7 @@
             color="primary"
             class="placeOrder-btn"
             (click)="onPlaceOrder()"
-            *ngIf="!isPlacedOrder"
+            *ngIf="(!isPlacedOrder && cartItems && cartItems.length > 0)"
             style="text-transform: uppercase;"
           >
             <span>Place order</span>
@@ -236,7 +236,7 @@
                   [src]="
                     item.imageUrl
                       ? 'data:image/' + item.imageFormat + ';base64,' + item.imageUrl
-                      : '../../../assets/books/book.png'
+                      : '../../../assets/books/book.jpeg'
                   "
                   alt="{{ item.title || 'Default Title' }}"
                   class="book-image"
@@ -261,7 +261,7 @@
 
         <!-- Checkout Button -->
         <div class="placeorder" *ngIf="isAddressSelected">
-          <button mat-flat-button color="primary" class="placeOrder-btn btn">
+          <button mat-flat-button color="primary" class="placeOrder-btn btn" (click)="placeOrder()">
             <span>Checkout</span>
           </button>
         </div>

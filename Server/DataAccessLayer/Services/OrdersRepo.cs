@@ -69,7 +69,8 @@ namespace DataAccessLayer.Services
                             TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
                             TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
                             OrderStatus = reader["Status"].ToString(),
-                            OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate"))
+                            OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate")),
+                            Image = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null
                         });
                     }
                 }
@@ -85,8 +86,6 @@ namespace DataAccessLayer.Services
                 SqlCommand cmd = new SqlCommand("usp_GetOrder", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@OrderId", orderId);
-
-                //OrderDTO order = null;
 
                 await con.OpenAsync();
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
@@ -122,5 +121,39 @@ namespace DataAccessLayer.Services
             }
             return await GetOrderAsync(orderId);
         }
+
+        public async Task<OrderDetailDTO> GetOrderDetailsAsync(int orderId)
+        {
+            using (SqlConnection con = new SqlConnection(_conString))
+            {
+                SqlCommand cmd = new SqlCommand("usp_GetOrder", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@OrderId", orderId);
+
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return new OrderDetailDTO
+                        {
+                            OrderId = reader.GetInt32(reader.GetOrdinal("OrderId")),
+                            BookTitle = reader.GetString(reader.GetOrdinal("BookTitle")),
+                            Author = reader.GetString(reader.GetOrdinal("Author")),
+                            Image = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
+                            Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+                            TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
+                            DiscountedPrice = reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
+                            OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate")),
+                            OrderStatus = reader["Status"].ToString()
+                        };
+                    }
+                }
+
+                return null;
+            }
+        }
+
     }
 }
+
