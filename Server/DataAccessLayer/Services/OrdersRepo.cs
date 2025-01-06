@@ -48,36 +48,81 @@ namespace DataAccessLayer.Services
             }
         }
 
+        //public async Task<List<OrderDTO>> GetOrdersAsync(int userId)
+        //{
+        //    using (SqlConnection con = new SqlConnection(_conString))
+        //    {
+        //        SqlCommand cmd = new SqlCommand("usp_GetOrders", con);
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.Parameters.AddWithValue("@UserId", userId);
+
+        //        List<OrderDTO> orders = new List<OrderDTO>();
+
+        //        await con.OpenAsync();
+        //        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+        //        {
+        //            while (await reader.ReadAsync())
+        //            {
+        //                orders.Add(new OrderDTO
+        //                {
+        //                    OrderId = reader.GetInt32(reader.GetOrdinal("OrderId")),
+        //                    TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
+        //                    TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
+        //                    OrderStatus = reader["Status"].ToString(),
+        //                    OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate")),
+        //                    Image = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
+        //                    Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+        //                    BookTitle = reader["BookTitle"].ToString(),
+        //                    Author = reader["Author"].ToString()
+        //                });
+        //            }
+        //        }
+
+        //        return orders;
+        //    }
+        //}
         public async Task<List<OrderDTO>> GetOrdersAsync(int userId)
         {
-            using (SqlConnection con = new SqlConnection(_conString))
+            try
             {
-                SqlCommand cmd = new SqlCommand("usp_GetOrders", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@UserId", userId);
-
-                List<OrderDTO> orders = new List<OrderDTO>();
-
-                await con.OpenAsync();
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                using (SqlConnection con = new SqlConnection(_conString))
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        orders.Add(new OrderDTO
-                        {
-                            OrderId = reader.GetInt32(reader.GetOrdinal("OrderId")),
-                            TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
-                            TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("DiscountedPrice")),
-                            OrderStatus = reader["Status"].ToString(),
-                            OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate")),
-                            Image = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null
-                        });
-                    }
-                }
+                    SqlCommand cmd = new SqlCommand("usp_GetOrders", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UserId", userId);
 
-                return orders;
+                    List<OrderDTO> orders = new List<OrderDTO>();
+
+                    await con.OpenAsync();
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            orders.Add(new OrderDTO
+                            {
+                                OrderId = reader.GetInt32(reader.GetOrdinal("OrderId")),
+                                TotalPrice = reader.GetDecimal(reader.GetOrdinal("TotalPrice")),
+                                TotalDiscountedPrice = reader.GetDecimal(reader.GetOrdinal("TotalDiscountedPrice")),
+                                OrderStatus = reader["Status"].ToString(),
+                                OrderDate = reader.GetDateTime(reader.GetOrdinal("OrderDate")),
+                                Image = reader["ImageData"] != DBNull.Value ? Convert.ToBase64String((byte[])reader["ImageData"]) : null,
+                                Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+                                BookTitle = reader["BookTitle"].ToString(),
+                                Author = reader["Author"].ToString()
+                            });
+                        }
+                    }
+
+                    return orders;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error retrieving orders: " + ex.Message);
+                throw;
             }
         }
+
 
         public async Task<OrderDTO> GetOrderAsync(int orderId)
         {

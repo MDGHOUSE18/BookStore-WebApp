@@ -1,20 +1,154 @@
 .outer {
-    width: 100%;
-    min-height: 84vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    height: 40vh;
-  }
-  
-  img {
-    display: block;
-  }
-  
+  width: 100%;
+  min-height: 84vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// ::ng-deep .outer[_ngcontent-ng-c2049211078]{
+//   align-items: center;
+// }
+
+.inner {
+  height: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+img {
+  display: block;
+}
+
+.outer {
+  width: 100%;
+  align-items: flex-start;
+}
+
+.orders {
+  width: 60vw;
+  display: flex;
+  flex-direction: column;
+  padding: 1vw;
+  margin: 0;
+}
+
+.orders h1 {
+  padding: 1rem;
+}
+
+.orders h1 span {
+  font-size: 1rem;
+  color: grey;
+}
+
+::ng-deep .mat-typography p {
+  margin: 0;
+}
+
+.outer .orders .top {
+  padding: 2vw;
+  font: normal normal normal 1rem Roboto;
+}
+
+.outer .orders p button {
+  background: none;
+  border: none;
+  color: #9d9d9d;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 5px;
+}
+
+.outer .orders p span {
+  color: #0a0102;
+}
+
+.orders-content {
+  background: #f5f5f5;
+  border: 1px solid #e4e4e4;
+  border-radius: 1px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  border-radius: 0.5rem;
+}
+
+.orders-content .heading {
+  font: normal normal medium 24px Roboto;
+  color: #0a0102;
+  padding: 2vw;
+}
+
+.orders-content .heading p {
+  font-weight: bold;
+  font-size: large;
+}
+
+.orderItems {
+  display: flex;
+  overflow-x: auto;
+  gap: 2vh;
+  scroll-snap-type: x mandatory;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.orderItems .item {
+  display: flex;
+  justify-content: space-between;
+  padding: 2vw;
+  // height: 15vh;
+  border-radius: 1vw;
+  background: #fff;
+  height: 18vh;
+}
+
+.orderItems .item .right {
+  display: flex;
+  justify-content: space-between;
+  gap: 5vw;
+}
+
+.orderItems .item img {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.orderItems .item p {
+  // margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+  padding: 1vh;
+}
+
+.orderItems .item .title {
+  font: normal normal normal 17px Lato;
+  letter-spacing: 0px;
+  color: #0a0102;
+  font-weight: 500;
+}
+
+.orderItems .item .author {
+  font: normal normal normal 12px Lato;
+  letter-spacing: 0px;
+  color: #9d9d9d;
+}
+
+.orderItems .item .discountedPrice {
+  font-weight: bold;
+  font: normal normal bold 18px Lato;
+  letter-spacing: 0px;
+  color: #0a0102;
+}
+
+.orderItems .item .price {
+  font: normal normal normal 11px Lato;
+  letter-spacing: 0px;
+  color: #9d9d9d;
+  text-decoration: line-through;
+}

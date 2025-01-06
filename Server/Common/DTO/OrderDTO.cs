@@ -14,5 +14,8 @@ namespace Common.DTO
         public string OrderStatus { get; set; }
         public DateTime OrderDate { get; set; }
         public string Image { get; set; }
+        public int Quantity { get; set; }
+        public string BookTitle { get; set; }
+        public string Author { get; set; }
     }
 }

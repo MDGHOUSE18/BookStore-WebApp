@@ -8,6 +8,8 @@ import { WishlistComponent } from './components/wishlist/wishlist.component';
 import { CartComponent } from './components/cart/cart.component';
 import { OrdersComponent } from './components/orders/orders.component';
 import { OrderSuccessComponent } from './components/order-success/order-success.component';
+import { ForgotpasswordComponent } from './components/forgotpassword/forgotpassword.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 const routes: Routes = [
   {path:'',redirectTo:'/home',pathMatch:'full'},
@@ -20,10 +22,12 @@ const routes: Routes = [
       {path:'wishlist',component:WishlistComponent},
       {path:'cart',component:CartComponent},
       {path:'orders',component:OrdersComponent},
-      {path:'success',component:OrderSuccessComponent}
+      {path:'success',component:OrderSuccessComponent},
+      {path:'profile',component:ProfileComponent}
     ],
   },
   { path: 'login', component: LoginSignupComponent },
+  {path:'forgotPassword',component:ForgotpasswordComponent},
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 

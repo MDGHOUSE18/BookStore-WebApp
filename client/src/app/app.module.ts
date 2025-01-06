@@ -38,6 +38,8 @@ import { OrdersComponent } from './components/orders/orders.component';
 import { BookCardComponent } from './components/book-card/book-card.component';
 import { OrderSuccessComponent } from './components/order-success/order-success.component';
 import { SearchPipe } from './pipes/search.pipe';
+import { ForgotpasswordComponent } from './components/forgotpassword/forgotpassword.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +56,8 @@ import { SearchPipe } from './pipes/search.pipe';
     BookCardComponent,
     OrderSuccessComponent,
     SearchPipe,
+    ForgotpasswordComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,

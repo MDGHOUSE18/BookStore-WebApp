@@ -1,62 +1,61 @@
 <div class="outer" *ngIf="!token; else Orders" [ngStyle]="{ width: 'auto', 'align-items': 'center' }">
-    <div class="inner">
-        <h1>PLEASE LOG IN</h1>
-        <p>Login to view items in your orders.</p>
-        <img src="../../../assets/header/Page-1@2x.png" alt="">
-        <button mat-stroked-button class="login-btn" >Login/SignUp</button>
-    </div>
+  <div class="inner">
+      <h1>PLEASE LOG IN</h1>
+      <p>Login to view items in your orders.</p>
+      <img src="../../../assets/header/Page-1@2x.png" alt="">
+      <button mat-stroked-button class="login-btn">Login/SignUp</button>
+  </div>
 </div>
 
-
 <ng-template #Orders>
-    <div class="outer">
-        <div class="wishlist">
-          <p class="top">
-            <button>Home/</button>
-            <span>My Wishlist</span>
-          </p>
-          <div class="wishlist-content">
-            <div class="heading">
-              <p>My Wishlist</p>
-            </div>
-            <div class="wishListItems">
-              <div class="item" *ngFor="let item of orders">
-                <div class="right">
-                  <div class="img">
-                    <img
-                      [src]="
-                      item.imageUrl
-                          ? 'data:image/' +
-                          item.imageFormat +
-                            ';base64,' +
-                            item.imageUrl
-                          : '../../../assets/books/book.png'
-                      "
-                      alt="{{ item.title || 'Default Title' }}"
-                      class="book-image"
-                    />
-                  </div>
-                  <div class="details">
-                    <p class="title">{{ item.title }}</p>
-                    <p class="author">by {{ item.author }}</p>
-                    <p>
-                      <span class="discountedPrice">{{
-                        item.discountedPrice | currency:'INR'
-                      }}</span>
-                      &nbsp;
-                      <span class="price">{{ item.price | currency:'INR' }}</span>
-                    </p>
-                  </div>
+  <div class="outer">
+      <div class="orders">
+        <p class="top">
+          <button [routerLink]="['']">Home/</button>
+          <span>My Orders</span>
+        </p>
+        <div class="orders-content">
+          <div class="heading">
+            <p>My Orders</p>
+          </div>
+          <div class="orderItems">
+            <div class="item" *ngFor="let item of orders">
+              <div class="right">
+                <div class="img">
+                  <img
+                    [src]="
+                    item.image
+                        ? 'data:image/' +
+                        item.imageFormat +
+                          ';base64,' +
+                          item.image
+                        : '../../../assets/books/book.jpeg'
+                    "
+                    alt="{{ item.title || 'Default Title' }}"
+                    class="book-image"
+                  />
                 </div>
-                <div class="left">
-                <button mat-icon-button >
-    
-                    <img  src="../../../assets/common/delete.png" alt="delete" >
-                </button>
+                <div class="details">
+                  <p class="title">{{ item.bookTitle }}</p>
+                  <p class="author">by {{ item.author }}</p>
+                  <p style="font-weight: bold;">Quantity : {{item.quantity}}</p>
+                  <p>
+                    <span class="discountedPrice">{{
+                      item.totalDiscountedPrice | currency:'INR'
+                    }}</span>
+                    &nbsp;
+                    <span class="price">{{ item.totalPrice | currency:'INR' }}</span>
+                  </p>
                 </div>
               </div>
+              <!-- <div class="left">
+                <button mat-icon-button>
+                  <img src="../../../assets/common/delete.png" alt="delete">
+                </button>
+              </div> -->
             </div>
           </div>
         </div>
       </div>
+    </div>
 </ng-template>

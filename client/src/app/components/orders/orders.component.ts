@@ -27,8 +27,8 @@ export class OrdersComponent {
       getOrders(){
         this.ordersService.getAllOrders().subscribe(
           (response) => {
-            this.getOrders = response.data;
-            console.log(this.getOrders);
+            this.orders = response.data;
+            console.log(this.orders);
             
           },
           (error) => {

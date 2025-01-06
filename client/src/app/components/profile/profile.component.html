@@ -1,0 +1,105 @@
+<div
+  class="outer"
+  *ngIf="!token; else Profile"
+  [ngStyle]="{ width: 'auto', 'align-items': 'center' }"
+>
+  <div class="inner">
+    <h1>PLEASE LOG IN</h1>
+    <p>Login to view items in your orders.</p>
+    <img src="../../../assets/header/Page-1@2x.png" alt="" />
+    <button mat-stroked-button class="login-btn">Login/SignUp</button>
+  </div>
+</div>
+
+<ng-template #Profile>
+  <div class="outer">
+    <div class="inner">
+      <div class="container">
+        <p class="top">
+          <a [routerLink]="['']">Home/</a>
+          <span>My Profile</span>
+        </p>
+        <div class="profile">
+          <h1 style="display: inline;">Personal Details</h1> : <button (click)="onEdit()" class="edit-btn">Edit</button>
+
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+            <div class="form">
+              <label for="fullName">Full Name</label>
+              <input
+                matInput
+                placeholder="Enter your full name"
+                formControlName="fullName"
+                type="text"
+                [readonly]="!isEditable"
+              />
+            </div>
+
+            <div class="form">
+              <label for="email">Email Id</label>
+              <input
+                matInput
+                placeholder="Enter your email"
+                formControlName="email"
+                type="email"
+                [readonly]="!isEditable"
+              />
+            </div>
+
+            <div class="form">
+              <label for="role">Role</label>
+              <input
+                matInput
+                placeholder="Enter your role"
+                formControlName="role"
+                type="text"
+                [readonly]
+              />
+            </div>
+
+            <!-- <div class="form">
+              <label for="address">Address</label>
+              <input
+                matInput
+                placeholder="Enter your address"
+                formControlName="address"
+                type="text"
+                [readonly]="!isEditable"
+              />
+            </div> -->
+
+            <div class="form">
+              <label for="phoneNumber">Phone Number</label>
+              <input
+                matInput
+                placeholder="Enter your phone number"
+                formControlName="phoneNumber"
+                type="tel"
+                [readonly]="!isEditable"
+              />
+            </div>
+            <div class="btn">
+
+                <button
+                type="submit"
+                mat-raised-button
+              *ngIf="isEditable"
+              [disabled]="profileForm.invalid "
+            >
+            Submit
+        </button>
+        
+        <button
+        type="button"
+        mat-raised-button
+        *ngIf="isEditable"
+              (click)="onCancel()"
+            >
+              Cancel
+            </button>
+        </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

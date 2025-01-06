@@ -160,6 +160,19 @@ BEGIN
     PRINT 'Order status updated successfully';
 END;
 
+--CREATE OR ALTER PROCEDURE usp_GetOrders
+--    @UserId INT
+--AS
+--BEGIN
+--    SELECT 
+--        o.OrderId, 
+--        o.TotalPrice, 
+--        o.TotalDiscountedPrice, 
+--        o.OrderDate, 
+--        o.Status
+--    FROM Orders o
+--    WHERE o.UserId = @UserId;
+--END;
 CREATE OR ALTER PROCEDURE usp_GetOrders
     @UserId INT
 AS
@@ -169,9 +182,16 @@ BEGIN
         o.TotalPrice, 
         o.TotalDiscountedPrice, 
         o.OrderDate, 
-        o.Status
+        o.Status,
+        od.Quantity,
+        b.Title AS BookTitle, 
+        b.Author, 
+        b.ImageData
     FROM Orders o
-    WHERE o.UserId = @UserId;
+    INNER JOIN OrderDetails od ON o.OrderId = od.OrderId
+    INNER JOIN Books b ON od.BookId = b.BookId
+    WHERE o.UserId = @UserId
+    ORDER BY o.OrderDate DESC, o.OrderId DESC; -- Orders can be sorted for better readability
 END;
 
 

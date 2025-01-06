@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FloatLabelType } from '@angular/material/form-field';
+import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/dataService/data.service';
 import { UserService } from 'src/app/Services/userService/user.service';
 
@@ -25,7 +26,8 @@ export class LoginSignupComponent implements OnInit {
     private fb: FormBuilder, 
     private userService: UserService,
     private dialogRef: MatDialogRef<LoginSignupComponent>,
-    private dataService:DataService
+    private dataService:DataService,
+    private router:Router
   ) {}
 
   ngOnInit(): void {
@@ -67,7 +69,11 @@ export class LoginSignupComponent implements OnInit {
   navigateBtn(): void {
     this.form = !this.form; 
   }
-
+  
+  onForgotPassport(){
+    this.dialogRef.close();
+    this.router.navigate(['/forgotPassword']);
+  }
   onLoginSubmit(): void {
     if (this.loginForm.valid) {
       this.userService.login(this.loginForm.value).subscribe(
