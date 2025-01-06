@@ -32,7 +32,15 @@ export class DataService {
   private cartItems = new BehaviorSubject<any[]>([]);
   CartItems = this.cartItems.asObservable();
 
+  private messageSource = new BehaviorSubject([]);
+  incomingData = this.messageSource.asObservable();
+
   constructor() {}
+
+  outgoingData(message : any){
+    // console.log(message)
+    this.messageSource.next(message)
+  }
 
   setUsername(data: string): void {
     this.userName.next(data);

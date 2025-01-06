@@ -6,7 +6,7 @@
     <div class="home-content">
       <div
         class="card"
-        *ngFor="let book of displayedBooks"
+        *ngFor="let book of displayedBooks | search:filterBooks"
         [routerLink]="['/book', book.bookID]"
       >
       <app-book-card [book]="book"></app-book-card>

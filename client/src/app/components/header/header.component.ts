@@ -17,6 +17,7 @@ export class HeaderComponent implements OnInit{
   subsription!:Subscription;
   token:string|null = null;
   cartItems :any=[]
+  
 
   constructor(
     private dialog: MatDialog,
@@ -32,6 +33,10 @@ export class HeaderComponent implements OnInit{
     // console.log(this.cartItems.length);
     // console.log(this.cartItems);
     
+  }
+  Search(event:any){
+    // console.log(event.target.value)
+    this.dataService.outgoingData(event.target.value.toLowerCase());
   }
 
   checkLoginStatus() {

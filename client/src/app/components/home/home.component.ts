@@ -20,6 +20,7 @@ export class HomeComponent implements OnInit {
   cartListItem: any[] = [];
   subscription: Subscription = new Subscription();
   token: string | null = null;
+  filterBooks:any;
 
   constructor(
     private booksService: BooksService,
@@ -32,6 +33,11 @@ export class HomeComponent implements OnInit {
     this.initializeSubscriptions();
     this.getBooks();
     this.getCartItems();
+    this.dataService.incomingData.subscribe(
+      (response :any)=>{
+        this.filterBooks = response;
+      }
+    )
   }
 
   ngOnDestroy(): void {

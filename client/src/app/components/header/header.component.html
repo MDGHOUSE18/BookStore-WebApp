@@ -12,7 +12,7 @@
           class="search-icon"
         />
       </button>
-      <input matInput placeholder="Search" value="" class="search-input" />
+      <input matInput placeholder="Search" value="" class="search-input" (keyup)="Search($event)"/>
     </div>
   </div>
   <div class="left">

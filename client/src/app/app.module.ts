@@ -37,6 +37,7 @@ import { CartComponent } from './components/cart/cart.component';
 import { OrdersComponent } from './components/orders/orders.component';
 import { BookCardComponent } from './components/book-card/book-card.component';
 import { OrderSuccessComponent } from './components/order-success/order-success.component';
+import { SearchPipe } from './pipes/search.pipe';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { OrderSuccessComponent } from './components/order-success/order-success.
     OrdersComponent,
     BookCardComponent,
     OrderSuccessComponent,
+    SearchPipe,
   ],
   imports: [
     BrowserModule,
