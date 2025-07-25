@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/Services/dataService/data.service';
 import { UserService } from 'src/app/Services/userService/user.service';
@@ -24,7 +25,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private user: UserService,
     private dataService: DataService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar:MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -52,9 +54,9 @@ export class ProfileComponent implements OnInit {
 
   onSubmit(): void {
     if (this.profileForm.valid) {
-      console.log('Form Submitted:', this.profileForm.value);
+      this.snackBar.open('Form Submitted sucessfully', 'Close', { duration: 2000 });
     } else {
-      console.log('Form is not valid');
+      this.snackBar.open('Form is not valid', 'Close', { duration: 2000 });
     }
   }
 

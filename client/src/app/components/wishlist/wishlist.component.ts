@@ -35,28 +35,24 @@ export class WishlistComponent implements OnInit {
   getWishlistItems() {
     this.wishlistService.getAllWishlist().subscribe(
       (response) => {
-        console.log(response);
         this.wishListItems = response.data;
         this.dataService.setWishListData(this.wishListItems)
       },
       (error) => {
-        console.log('Error fetching wishlist items');
+        console.error('Error fetching wishlist items');
       }
     );
   }
 
   deleteWishList(wishListId: any) {
-    console.log(wishListId);
-    
     this.wishlistService.removeBookFromWishlist(wishListId).subscribe(
       (response) => {
-        console.log(response);
         this.wishListItems = this.wishListItems.filter(
           (item: any) => item.wishListId !== wishListId
         );
       },
       (error) => {
-        console.log('Error fetching wishlist items');
+        console.error('Error fetching wishlist items');
       }
     );
   }

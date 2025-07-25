@@ -67,7 +67,6 @@ export class HomeComponent implements OnInit {
     if (this.token) {
       this.cartService.getCarts().subscribe(
         (response: any) => {
-          // console.log('Cart List Items:', response?.data);
           this.dataService.setCartData(response?.data || []);
         },
         (error) => {

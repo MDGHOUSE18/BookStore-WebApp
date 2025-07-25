@@ -142,7 +142,6 @@ export class BookComponent implements OnInit {
       newQuantity: change,
     };
     this.cartService.updateCart(reqData).subscribe(
-      () => console.log('Cart updated successfully'),
       (error) => console.error('Error updating cart:', error)
     );
   }

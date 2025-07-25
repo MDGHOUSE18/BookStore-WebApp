@@ -28,11 +28,9 @@ export class OrdersComponent {
         this.ordersService.getAllOrders().subscribe(
           (response) => {
             this.orders = response.data;
-            console.log(this.orders);
-            
           },
           (error) => {
-            console.log('Error fetching orderslist items');
+            console.error('Error fetching orderslist items');
           }
         )
       }

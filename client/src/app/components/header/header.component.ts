@@ -30,12 +30,10 @@ export class HeaderComponent implements OnInit{
     this.subsription=this.dataService.UserName.subscribe((result)=>this.userName=result)
     this.subsription=this.dataService.AccessToken.subscribe((result)=>this.token=result)
     this.subsription = this.dataService.CartItems.subscribe((result) => this.cartItems=result)
-    // console.log(this.cartItems.length);
-    // console.log(this.cartItems);
+
     
   }
   Search(event:any){
-    // console.log(event.target.value)
     this.dataService.outgoingData(event.target.value.toLowerCase());
   }
 
@@ -62,9 +60,6 @@ export class HeaderComponent implements OnInit{
     if (confirmLogout) {
       localStorage.clear();
       this.dataService.clearUserData()
-      console.log(this.token)
-      console.log('Logged out and session cleared');
-      // alert('logout succesfully')
       this.userName = null
       this.snackBar.open('Logout successfully', 'Close', { duration: 2000 });
       this.islogin=false;

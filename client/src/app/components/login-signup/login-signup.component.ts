@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FloatLabelType } from '@angular/material/form-field';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/dataService/data.service';
 import { UserService } from 'src/app/Services/userService/user.service';
@@ -27,7 +28,8 @@ export class LoginSignupComponent implements OnInit {
     private userService: UserService,
     private dialogRef: MatDialogRef<LoginSignupComponent>,
     private dataService:DataService,
-    private router:Router
+    private router:Router,
+    private snackBar:MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -88,7 +90,6 @@ export class LoginSignupComponent implements OnInit {
             this.dataService.setAccessToken(token)
             this.dataService.setUserEmail(email)
             this.dataService.setUserPhone(phone)
-            console.log('User data saved in local storage');
             this.dialogRef.close();
           } else {
             console.error('Login failed:', response.message);
@@ -99,24 +100,23 @@ export class LoginSignupComponent implements OnInit {
         }
       );
     } else {
-      console.log('Login form is invalid');
+      this.snackBar.open('Credentials are invalid', 'Close', { duration: 2000 });
     }
   }
   
-
+  
   onSignupSubmit(): void {
     if (this.signupForm.valid) {
-      console.log(this.signupForm.value);
       this.userService.register(this.signupForm.value).subscribe(
         (response) => {
-          console.log('Registration successful:', response);
+          this.snackBar.open('Registration successful:'+ response, 'Close', { duration: 2000 });
         },
         (error) => {
           console.error('Registration failed:', error);
         }
       );
     } else {
-      console.log('SignUp form is invalid');
+      this.snackBar.open('ENter all required feilds','Close', { duration: 2000 });
     }
   }
 

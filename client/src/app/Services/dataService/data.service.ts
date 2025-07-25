@@ -38,7 +38,6 @@ export class DataService {
   constructor() {}
 
   outgoingData(message : any){
-    // console.log(message)
     this.messageSource.next(message)
   }
 

@@ -7,6 +7,7 @@ import { CartService } from 'src/app/Services/cartService/cart.service';
 import { AddressService } from 'src/app/Services/addressService/address.service';
 import { OrdersService } from 'src/app/Services/orderService/orders.service';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-cart',
@@ -45,7 +46,8 @@ export class CartComponent {
     private cartService: CartService,
     private addressService: AddressService,
     private orderService: OrdersService,
-    private router:Router
+    private router:Router,
+    private snackBar:MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -76,7 +78,7 @@ export class CartComponent {
         this.dataService.setCartData(response.data);
       },
       (error) => {
-        console.log('Error fetching wishlist items');
+        console.error('Error fetching wishlist items');
       }
     );
   }
@@ -110,11 +112,9 @@ export class CartComponent {
       newQuantity: num,
     };
     this.cartService.updateCart(reqData).subscribe(
-      (response) => {
-        console.log(response.message);
-      },
+     
       (error) => {
-        console.log('Error updating cart');
+        console.error('Error updating cart');
       }
     );
   }
@@ -140,16 +140,16 @@ export class CartComponent {
 
   addNewAddress(formData: any): void {
     let reqData = {
-      typeId: formData.addressType,
+      typeId: this.typeToNumber[formData.addressType],
       address: formData.address,
       city: formData.city,
       state: formData.state,
     };
+    
     this.addressService.createAddress(reqData).subscribe(
       (response) => {
         this.getAddresses();
         this.addAddress = false;
-        console.log(response);
       },
       (error) => {
         console.error('Error adding address', error);
@@ -177,7 +177,6 @@ export class CartComponent {
       city: formData.city,
       state: formData.state,
     };
-    console.log(reqData);
     this.addressService.updateAddress(reqData).subscribe(
       (response) => {
         this.getAddresses();
@@ -199,9 +198,8 @@ export class CartComponent {
     if (this.selectedAddress) {
       this.isAddressSelected = true;
       this.onOpenUpdateAddress(this.selectedAddress);
-      console.log('Selected Address:', this.selectedAddress);
     } else {
-      console.log('No address selected');
+      this.snackBar.open('No address selected', 'Close', { duration: 2000 });
     }
   }
 
@@ -209,13 +207,6 @@ export class CartComponent {
     if (this.selectedAddress) {
       this.orderService.createOrder(this.selectedAddress.addressId).subscribe(
         (response: any) => {
-          console.log(response.message);
-          // this.cartItems = [];
-          // this.addAddress = false;
-          // this.btn = true;
-          // this.addresses = [];
-          // this.isPlacedOrder = false;
-          // this.isAddressSelected = false;
           this.router.navigate(["/success"])
         },
         (error: any) => {
@@ -223,7 +214,7 @@ export class CartComponent {
         }
       );
     } else {
-      console.log('No address selected');
+      this.snackBar.open('No address selected', 'Close', { duration: 2000 });
     }
   }
 }
