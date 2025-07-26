@@ -92,7 +92,7 @@ export class LoginSignupComponent implements OnInit {
             this.dataService.setUserPhone(phone)
             this.dialogRef.close();
           } else {
-            console.error('Login failed:', response.message);
+            console.error('Login failed: ', response.message);
           }
         },
         (error) => {
